@@ -1,14 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { lockParent, renameMonster } from "./actions";
 import { LogDialog, PinDialog } from "./ParentDialogs";
 import { MonsterCard } from "./MonsterCard";
-import { PixelSprite } from "./PixelSprite";
-import { coin, hero, padlock } from "./sprites";
+import { PixelSprite } from "@/shared/pixel/PixelSprite";
+import { coin, padlock } from "./sprites";
+import { characterLayers } from "@/features/wardrobe/character";
 import type { Board as BoardData, QuestRow } from "./types";
-import { SoundProvider, useSound } from "@/shared/audio/SoundProvider";
+import { useSound } from "@/shared/audio/SoundProvider";
 import { nextRespawnAt } from "@/shared/time/pht";
 import { useNow } from "@/shared/time/useNow";
 import "./quest-board.css";
@@ -46,15 +48,18 @@ function Board({ board, isParent }: QuestBoardProps) {
   return (
     <main className="quest-board">
       <header className="quest-board__hud">
-        <div className="quest-board__hero">
-          <PixelSprite sprite={hero} label="Your hero" />
-        </div>
+        <Link href="/shop" className="quest-board__hero" aria-label="Visit the merchant">
+          <PixelSprite sprite={characterLayers(board.equipped)} label="Your hero" />
+        </Link>
         <div className="quest-board__coins" aria-label={`${board.coins} coins`}>
           <div className="quest-board__coin">
             <PixelSprite sprite={coin} label="Coins" />
           </div>
           <span>{board.coins}</span>
         </div>
+        <Link href="/shop" className="quest-board__icon-button quest-board__shop">
+          SHOP
+        </Link>
         <button
           type="button"
           className="quest-board__icon-button"
@@ -137,10 +142,4 @@ function Board({ board, isParent }: QuestBoardProps) {
   );
 }
 
-export function QuestBoard(props: QuestBoardProps) {
-  return (
-    <SoundProvider>
-      <Board {...props} />
-    </SoundProvider>
-  );
-}
+export const QuestBoard = Board;

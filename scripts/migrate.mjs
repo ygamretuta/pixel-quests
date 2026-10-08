@@ -34,6 +34,14 @@ const statements = [
     id bigserial PRIMARY KEY,
     at timestamptz NOT NULL DEFAULT now()
   )`,
+  `CREATE TABLE IF NOT EXISTS owned_items (
+    item_id text PRIMARY KEY,
+    bought_at timestamptz NOT NULL DEFAULT now()
+  )`,
+  `CREATE TABLE IF NOT EXISTS equipped (
+    slot text PRIMARY KEY,
+    item_id text NOT NULL REFERENCES owned_items(item_id) ON DELETE CASCADE
+  )`,
   `INSERT INTO quests (id, title, monster_name, cadence, max_hp, reward, sprite, position) VALUES
     ('teeth', 'Brush Teeth', 'Gloop', 'daily', 2, 5, 'slime', 1),
     ('reading', 'Read a Story', 'Blip', 'daily', 1, 5, 'slime', 2),

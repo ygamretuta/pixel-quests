@@ -1,7 +1,7 @@
 "use client";
 
 import { useOptimistic, useState, useTransition } from "react";
-import { PixelSprite } from "./PixelSprite";
+import { PixelSprite } from "@/shared/pixel/PixelSprite";
 import type { QuestRow } from "./types";
 import { coin, pencil, slime, spritesByKey } from "./sprites";
 import { formatCountdown, nextRespawnAt } from "@/shared/time/pht";

@@ -1,7 +1,6 @@
-export type Sprite = {
-  rows: string[];
-  palette: Record<string, string>;
-};
+import type { Sprite } from "@/shared/pixel/PixelSprite";
+
+export type { Sprite };
 
 const base = { k: "#1b1b3a", w: "#ffffff" };
 

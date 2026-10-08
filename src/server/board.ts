@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { periodKey } from "@/shared/time/pht";
 import type { Board, QuestRow } from "@/features/quests/types";
 import { sql } from "./db";
+import { getEquipped } from "./wardrobe";
 
 export async function getBoard(withEvidence: boolean): Promise<Board> {
   await connection(); // request-time only: the current time must never be prerendered
@@ -10,7 +11,7 @@ export async function getBoard(withEvidence: boolean): Promise<Board> {
   const daily = periodKey("daily", now);
   const weekly = periodKey("weekly", now);
 
-  const [quests, wallet, evidence] = await Promise.all([
+  const [quests, wallet, evidence, equipped] = await Promise.all([
     sql`
       SELECT q.id, q.title, q.monster_name AS "monsterName", q.cadence, q.max_hp AS "maxHp",
              q.reward, q.sprite,
@@ -26,11 +27,13 @@ export async function getBoard(withEvidence: boolean): Promise<Board> {
           WHERE h.evidence_path IS NOT NULL
           ORDER BY h.created_at DESC LIMIT 12`
       : Promise.resolve([]),
+    getEquipped(),
   ]);
 
   return {
     asOf: now,
     coins: wallet[0]?.coins ?? 0,
+    equipped,
     quests: quests as QuestRow[],
     evidence: (evidence as { id: string; questTitle: string; createdAt: Date }[]).map((row) => ({
       id: Number(row.id),

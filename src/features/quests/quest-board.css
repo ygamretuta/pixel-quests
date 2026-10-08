@@ -12,7 +12,17 @@
 }
 
 .quest-board__hero {
-  width: 48px;
+  display: block;
+  width: 40px;
+}
+
+.quest-board__icon-button.quest-board__shop {
+  padding: 0 var(--space-1);
+  font-size: 8px;
+  color: var(--ink-dark);
+  text-decoration: none;
+  background: var(--accent-weekly);
+  box-shadow: none;
 }
 
 .quest-board__coins {
