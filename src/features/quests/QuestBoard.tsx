@@ -8,6 +8,7 @@ import { LogDialog, PinDialog } from "./ParentDialogs";
 import { MonsterCard } from "./MonsterCard";
 import { PixelSprite } from "@/shared/pixel/PixelSprite";
 import { coin, flame, padlock } from "./sprites";
+import { ICONS_BY_KEY } from "@/features/rewards/icons";
 import { nextMilestone } from "./streak";
 import { characterLayers } from "@/features/wardrobe/character";
 import { equippedPet } from "@/features/wardrobe/pets";
@@ -80,6 +81,11 @@ function Board({ board, isParent }: QuestBoardProps) {
         <Link href="/shop" className="quest-board__icon-button quest-board__shop">
           SHOP
         </Link>
+        <Link href="/treats" className="quest-board__icon-button" aria-label="Treats">
+          <span className="quest-board__gift">
+            <PixelSprite sprite={ICONS_BY_KEY.gift} label="" />
+          </span>
+        </Link>
         <button
           type="button"
           className="quest-board__icon-button"
@@ -124,6 +130,9 @@ function Board({ board, isParent }: QuestBoardProps) {
             </Link>
             <Link href="/manage" className="pixel-button quest-board__manage">
               Quests
+            </Link>
+            <Link href="/rewards" className="pixel-button quest-board__manage">
+              Rewards{board.pendingRewards > 0 ? ` (${board.pendingRewards})` : ""}
             </Link>
           </div>
         </div>

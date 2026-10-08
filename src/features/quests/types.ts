@@ -19,6 +19,7 @@ export type Board = {
   coins: number;
   equipped: Equipped;
   streak: Streak;
+  pendingRewards: number;
   quests: QuestRow[];
   evidence: EvidenceRow[];
 };

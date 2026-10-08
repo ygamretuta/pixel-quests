@@ -63,9 +63,14 @@ export function Shop({ coins, owned, equipped, isParent }: ShopProps) {
   return (
     <main className="shop">
       <header className="shop__hud">
-        <Link href="/" className="pixel-button pixel-button--secondary shop__back">
-          Quests
-        </Link>
+        <div className="shop__links">
+          <Link href="/" className="pixel-button pixel-button--secondary shop__back">
+            Quests
+          </Link>
+          <Link href="/treats" className="pixel-button pixel-button--secondary shop__back">
+            Treats
+          </Link>
+        </div>
         <div className="shop__coins" aria-label={`${coins} coins`}>
           <div className="shop__coin">
             <PixelSprite sprite={coin} label="Coins" />

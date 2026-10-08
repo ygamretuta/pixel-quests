@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { periodKey } from "@/shared/time/pht";
 import type { Board, QuestRow } from "@/features/quests/types";
 import { sql } from "./db";
+import { countPendingRewards } from "./rewards";
 import { getStreak } from "./streak";
 import { getEquipped } from "./wardrobe";
 
@@ -12,7 +13,7 @@ export async function getBoard(withEvidence: boolean): Promise<Board> {
   const daily = periodKey("daily", now);
   const weekly = periodKey("weekly", now);
 
-  const [quests, wallet, evidence, equipped, streak] = await Promise.all([
+  const [quests, wallet, evidence, equipped, streak, pendingRewards] = await Promise.all([
     sql`
       SELECT q.id, q.title, q.monster_name AS "monsterName", q.cadence, q.max_hp AS "maxHp",
              q.reward, q.sprite,
@@ -30,6 +31,7 @@ export async function getBoard(withEvidence: boolean): Promise<Board> {
       : Promise.resolve([]),
     getEquipped(),
     getStreak(now),
+    withEvidence ? countPendingRewards() : Promise.resolve(0),
   ]);
 
   return {
@@ -37,6 +39,7 @@ export async function getBoard(withEvidence: boolean): Promise<Board> {
     coins: wallet[0]?.coins ?? 0,
     equipped,
     streak,
+    pendingRewards,
     quests: quests as QuestRow[],
     evidence: (evidence as { id: string; questTitle: string; createdAt: Date }[]).map((row) => ({
       id: Number(row.id),

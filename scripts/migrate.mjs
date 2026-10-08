@@ -51,6 +51,24 @@ const statements = [
   `CREATE TABLE IF NOT EXISTS rest_days (
     day text PRIMARY KEY
   )`,
+  `CREATE TABLE IF NOT EXISTS rewards (
+    id text PRIMARY KEY,
+    title text NOT NULL,
+    cost int NOT NULL CHECK (cost > 0),
+    icon text NOT NULL,
+    position int NOT NULL DEFAULT 0,
+    active boolean NOT NULL DEFAULT true
+  )`,
+  `CREATE TABLE IF NOT EXISTS reward_requests (
+    id bigserial PRIMARY KEY,
+    reward_id text NOT NULL REFERENCES rewards(id) ON DELETE CASCADE,
+    title text NOT NULL,
+    cost int NOT NULL,
+    status text NOT NULL DEFAULT 'pending'
+      CHECK (status IN ('pending', 'approved', 'denied', 'cancelled')),
+    created_at timestamptz NOT NULL DEFAULT now(),
+    resolved_at timestamptz
+  )`,
   `INSERT INTO quests (id, title, monster_name, cadence, max_hp, reward, sprite, position) VALUES
     ('teeth', 'Brush Teeth', 'Gloop', 'daily', 2, 5, 'slime', 1),
     ('reading', 'Read a Story', 'Blip', 'daily', 1, 5, 'slime', 2),
