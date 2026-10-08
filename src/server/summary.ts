@@ -4,12 +4,13 @@ import { mondayOf, periodKey, weekDays } from "@/shared/time/pht";
 import { getStreak } from "./streak";
 import { sql } from "./db";
 
-export type Cell = "done" | "miss" | "na" | "future" | "today";
+export type Cell = "done" | "miss" | "na" | "future" | "today" | "rest";
 
 export type WeekSummary = {
   monday: string;
   isCurrentWeek: boolean;
   days: string[];
+  restDays: string[];
   dailies: { id: string; title: string; sprite: string; cells: Cell[]; doneDays: number }[];
   weeklies: { id: string; title: string; sprite: string; maxHp: number; hits: number; defeated: boolean }[];
   stats: { questsDone: number; perfectDays: number; coins: number; photos: number; streak: number };
@@ -24,7 +25,7 @@ export async function getWeekSummary(requestedMonday: string | null): Promise<We
   const monday = requestedMonday ? mondayOf(requestedMonday) : currentMonday;
   const days = weekDays(monday);
 
-  const [quests, hitRows, bonusRows, streak] = await Promise.all([
+  const [quests, hitRows, bonusRows, streak, restRows] = await Promise.all([
     sql`
       SELECT id, title, cadence, max_hp AS "maxHp", reward, sprite, active,
              (created_at AT TIME ZONE 'Asia/Manila')::date::text AS created
@@ -35,7 +36,9 @@ export async function getWeekSummary(requestedMonday: string | null): Promise<We
       GROUP BY quest_id, period`,
     sql`SELECT coalesce(sum(bonus), 0)::int AS bonus FROM streak_bonuses WHERE day = ANY(${days})`,
     getStreak(now),
+    sql`SELECT day FROM rest_days WHERE day = ANY(${days})`,
   ]);
+  const restDays = restRows.map((row) => row.day as string);
 
   const hitMap = new Map(hitRows.map((row) => [`${row.questId}|${row.period}`, row]));
   const hitsFor = (id: string, period: string) => (hitMap.get(`${id}|${period}`)?.n as number | undefined) ?? 0;
@@ -51,6 +54,7 @@ export async function getWeekSummary(requestedMonday: string | null): Promise<We
       if (day > today) return "future";
       if (quest.created > day) return "na";
       if (hitsFor(quest.id, day) >= quest.maxHp) return "done";
+      if (restDays.includes(day)) return "rest";
       return day === today ? "today" : "miss";
     });
     return {
@@ -97,6 +101,7 @@ export async function getWeekSummary(requestedMonday: string | null): Promise<We
     monday,
     isCurrentWeek: monday === currentMonday,
     days,
+    restDays,
     dailies,
     weeklies,
     stats: {

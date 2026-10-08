@@ -84,3 +84,20 @@ export async function renameMonster(questId: string, name: string) {
   await sql`UPDATE quests SET monster_name = ${trimmed} WHERE id = ${questId}`;
   revalidatePath("/");
 }
+
+/** Marks (or unmarks) a day as a rest day. Rest days never break the streak. */
+export async function setRestDay(day: string, rest: boolean) {
+  await requireParent();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || Number.isNaN(Date.parse(day))) return;
+  if (rest) await sql`INSERT INTO rest_days (day) VALUES (${day}) ON CONFLICT DO NOTHING`;
+  else await sql`DELETE FROM rest_days WHERE day = ${day}`;
+  revalidatePath("/");
+  revalidatePath("/summary");
+}
+
+export async function toggleRestToday() {
+  await requireParent();
+  const today = periodKey("daily", Date.now());
+  const [existing] = await sql`SELECT 1 FROM rest_days WHERE day = ${today}`;
+  await setRestDay(today, !existing);
+}

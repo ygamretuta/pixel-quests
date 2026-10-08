@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { lockParent, renameMonster, unlockParent } from "./actions";
+import { lockParent, renameMonster, toggleRestToday, unlockParent } from "./actions";
 import { LogDialog, PinDialog } from "./ParentDialogs";
 import { MonsterCard } from "./MonsterCard";
 import { PixelSprite } from "@/shared/pixel/PixelSprite";
@@ -111,6 +111,14 @@ function Board({ board, isParent }: QuestBoardProps) {
         <div className="quest-board__parent-bar">
           <p className="quest-board__banner">Parent mode</p>
           <div className="quest-board__parent-links">
+            <button
+              type="button"
+              className="pixel-button quest-board__manage"
+              aria-pressed={board.streak.restToday}
+              onClick={() => startTransition(async () => toggleRestToday())}
+            >
+              {board.streak.restToday ? "Rest: ON" : "Rest day"}
+            </button>
             <Link href="/summary" className="pixel-button quest-board__manage">
               Week
             </Link>
@@ -133,6 +141,10 @@ function Board({ board, isParent }: QuestBoardProps) {
           {upNext ? ` · ${upNext} days = bonus!` : ""}
         </span>
       </div>
+
+      {board.streak.restToday && (
+        <p className="quest-board__rest">Rest day! Your streak is safe. You can still fight if you want.</p>
+      )}
 
       <h1 className="quest-board__title">Today&apos;s Quests</h1>
       <div className="quest-board__grid">

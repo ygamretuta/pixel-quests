@@ -48,6 +48,9 @@ const statements = [
     streak int NOT NULL,
     bonus int NOT NULL
   )`,
+  `CREATE TABLE IF NOT EXISTS rest_days (
+    day text PRIMARY KEY
+  )`,
   `INSERT INTO quests (id, title, monster_name, cadence, max_hp, reward, sprite, position) VALUES
     ('teeth', 'Brush Teeth', 'Gloop', 'daily', 2, 5, 'slime', 1),
     ('reading', 'Read a Story', 'Blip', 'daily', 1, 5, 'slime', 2),

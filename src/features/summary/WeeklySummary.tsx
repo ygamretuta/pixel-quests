@@ -2,6 +2,8 @@ import Link from "next/link";
 import { spritesByKey } from "@/features/quests/monsters";
 import { slime } from "@/features/quests/sprites";
 import { PixelSprite } from "@/shared/pixel/PixelSprite";
+import { RestDays } from "./RestDays";
+import { ShareButtons } from "./ShareButtons";
 import { shiftDay } from "@/shared/time/pht";
 import type { WeekSummary } from "@/server/summary";
 import "./summary.css";
@@ -22,6 +24,7 @@ const CELL_LABEL = {
   na: "not started",
   future: "upcoming",
   today: "in progress",
+  rest: "rest day",
 } as const;
 
 export function WeeklySummary({ summary }: { summary: WeekSummary }) {
@@ -72,6 +75,8 @@ export function WeeklySummary({ summary }: { summary: WeekSummary }) {
 
       <p className="summary__insight">{summary.insight}</p>
 
+      <ShareButtons summary={summary} />
+
       <ul className="summary__tiles">
         {tiles.map((tile) => (
           <li key={tile.label} className="summary__tile">
@@ -113,10 +118,13 @@ export function WeeklySummary({ summary }: { summary: WeekSummary }) {
         <p className="summary__legend">
           <span className="summary__cell summary__cell--done">&nbsp;</span> done
           <span className="summary__cell summary__cell--miss">&nbsp;</span> missed
+          <span className="summary__cell summary__cell--rest">&nbsp;</span> rest
           <span className="summary__cell summary__cell--today">&nbsp;</span> today
           <span className="summary__cell summary__cell--na">&nbsp;</span> not started
         </p>
       </section>
+
+      <RestDays days={days} restDays={summary.restDays} />
 
       {weeklies.length > 0 && (
         <section className="summary__section">
