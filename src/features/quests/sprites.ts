@@ -36,3 +36,39 @@ export const gremlin: Sprite = {
   ],
   palette: { ...base, o: "#6b1d5c", g: "#c45be3", H: "#e8b3f7" },
 };
+
+export const hero: Sprite = {
+  rows: [
+    "...oooooo...",
+    "..osssssso..",
+    "..osssssso..",
+    "..oFFFFFFo..",
+    "..oFkFFkFo..",
+    "..oFFFFFFo..",
+    "...oooooo...",
+    ".obbbbbbbbo.",
+    "obbbbbbbbbbo",
+    "obbbbbbbbbbo",
+    ".obbbooobbo.",
+    "..oo....oo..",
+  ],
+  palette: { ...base, o: "#0b3d91", s: "#cfd8dc", F: "#ffcc99", b: "#3f7cff" },
+};
+
+export const coin: Sprite = {
+  rows: [".oooo.", "oyyyyo", "oyHyyo", "oyyyyo", "oyyyyo", ".oooo."],
+  palette: { o: "#b8860b", y: "#ffd34d", H: "#fff3b0" },
+};
+
+export const pencil: Sprite = {
+  rows: [
+    "....oo",
+    "...opo",
+    "..oyoo",
+    ".oyoo.",
+    "oyoo..",
+    "opo...",
+    "oo....",
+  ],
+  palette: { o: "#1b1b3a", p: "#ff7a9c", y: "#ffd34d" },
+};

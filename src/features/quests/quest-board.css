@@ -1,0 +1,70 @@
+.quest-board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-2);
+}
+
+.quest-board__hud {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.quest-board__hero {
+  width: 48px;
+}
+
+.quest-board__coins {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--coin);
+}
+
+.quest-board__coin {
+  width: 24px;
+}
+
+.quest-board__mute {
+  min-width: var(--control-height);
+  min-height: var(--control-height);
+  font: inherit;
+  font-size: 8px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 0;
+  box-shadow: inset 0 0 0 4px var(--panel-edge);
+  cursor: pointer;
+}
+
+.quest-board__title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.quest-board__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .quest-board {
+    padding: var(--space-4);
+  }
+
+  .quest-board__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .quest-board__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

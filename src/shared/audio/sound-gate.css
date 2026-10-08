@@ -1,0 +1,38 @@
+.sound-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: 0;
+  cursor: pointer;
+}
+
+.sound-gate__title {
+  font-size: 24px;
+  line-height: 32px;
+  color: var(--accent-weekly);
+}
+
+.sound-gate__prompt {
+  font-size: 12px;
+  line-height: 16px;
+  animation: sound-gate-blink 1s steps(2, jump-none) infinite;
+}
+
+@keyframes sound-gate-blink {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-gate__prompt {
+    animation: none;
+  }
+}

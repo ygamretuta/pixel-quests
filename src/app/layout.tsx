@@ -11,6 +11,7 @@ const pixelFont = Press_Start_2P({
 export const metadata: Metadata = {
   title: "Pixel Quests",
   description: "Defeat monsters by finishing real-life quests",
+  appleWebApp: { capable: true, title: "Pixel Quests", statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = {
