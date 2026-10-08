@@ -1,55 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { PixelSprite } from "./PixelSprite";
-import type { Quest } from "./quests";
-import { coin, pencil } from "./sprites";
-import { useSound } from "@/shared/audio/SoundProvider";
-import { useLocalStorage } from "@/shared/storage/useLocalStorage";
-import { formatCountdown, nextRespawnAt, periodKey } from "@/shared/time/pht";
-import { useNow } from "@/shared/time/useNow";
+import type { QuestRow } from "./types";
+import { coin, pencil, slime, spritesByKey } from "./sprites";
+import { formatCountdown, nextRespawnAt } from "@/shared/time/pht";
 import "./monster-card.css";
 
 type MonsterCardProps = {
-  quest: Quest;
-  name: string;
-  onRename: (name: string) => void;
-  onDefeat: (reward: number) => void;
+  quest: QuestRow;
+  now: number;
+  isParent: boolean;
+  /** Bumps each time the parent logs a hit this session; drives the hit/defeat animations. */
+  celebrate: number;
+  onRename: (questId: string, name: string) => Promise<void>;
+  onLog: (quest: QuestRow) => void;
 };
 
 const BURST_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
 
-type Progress = { period: string; hp: number } | null;
-
-export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProps) {
-  const now = useNow();
-  const [progress, setProgress] = useLocalStorage<Progress>(`pixel-quests:hp:${quest.id}`, null);
-  const [hitCount, setHitCount] = useState(0);
+export function MonsterCard({ quest, now, isParent, celebrate, onRename, onLog }: MonsterCardProps) {
   const [editing, setEditing] = useState(false);
-  const { play } = useSound();
-  // Progress only counts within its respawn period; a new period (12:00 AM PHT) restores full HP.
-  const period = now ? periodKey(quest.cadence, now) : null;
-  const hp = progress && progress.period === period ? progress.hp : quest.maxHp;
-  const defeated = hp === 0;
+  const [name, setOptimisticName] = useOptimistic(quest.monsterName);
+  const [, startTransition] = useTransition();
 
-  function hit() {
-    if (!period) return;
-    const next = hp - 1;
-    setProgress({ period, hp: next });
-    setHitCount((count) => count + 1);
-    if (next === 0) {
-      play("defeat");
-      play("coin");
-      onDefeat(quest.reward);
-    } else {
-      play("hit");
-    }
-  }
+  const hp = Math.max(0, quest.maxHp - quest.done);
+  const defeated = hp === 0;
+  const sprite = spritesByKey[quest.sprite] ?? slime;
+  const respawnIn = now ? formatCountdown(nextRespawnAt(quest.cadence, now) - now) : "";
 
   function saveName(value: string) {
-    const trimmed = value.trim();
-    if (trimmed) onRename(trimmed);
+    const trimmed = value.trim().slice(0, 12);
     setEditing(false);
+    if (!trimmed || trimmed === name) return;
+    startTransition(async () => {
+      setOptimisticName(trimmed);
+      await onRename(quest.id, trimmed);
+    });
   }
 
   return (
@@ -61,19 +48,19 @@ export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProp
 
       <div className="monster-card__stage">
         <div
-          key={hitCount}
+          key={celebrate}
           className={
             "monster-card__monster" +
             (defeated ? " monster-card__monster--defeated" : "") +
-            (defeated && hitCount === 0 ? " monster-card__monster--settled" : "") +
-            (hitCount > 0 && !defeated ? " monster-card__monster--hit" : "")
+            (defeated && celebrate === 0 ? " monster-card__monster--settled" : "") +
+            (celebrate > 0 && !defeated ? " monster-card__monster--hit" : "")
           }
         >
-          <PixelSprite sprite={quest.sprite} label={name} />
+          <PixelSprite sprite={sprite} label={name} />
         </div>
         {defeated && (
           <>
-            {hitCount > 0 && (
+            {celebrate > 0 && (
               <div className="monster-card__burst" aria-hidden="true">
                 {BURST_ANGLES.map((angle) => (
                   <span
@@ -103,8 +90,8 @@ export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProp
           defaultValue={name}
           maxLength={12}
           autoFocus
-          onFocus={(event) => event.target.select()}
           aria-label="Monster name"
+          onFocus={(event) => event.target.select()}
           onBlur={(event) => saveName(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === "Enter") event.currentTarget.blur();
@@ -141,18 +128,19 @@ export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProp
         ))}
       </div>
       <p className="monster-card__hp">
-        {hp}/{quest.maxHp} HP
+        {defeated && respawnIn ? `Back in ${respawnIn}` : `${hp}/${quest.maxHp} HP`}
       </p>
 
-      {/* Demo control; becomes parent-only evidence approval later. */}
-      <button
-        type="button"
-        className="monster-card__action"
-        onClick={hit}
-        disabled={defeated || !period}
-      >
-        {defeated ? `Back in ${formatCountdown(nextRespawnAt(quest.cadence, now) - now)}` : "Hit!"}
-      </button>
+      {isParent && (
+        <button
+          type="button"
+          className="pixel-button"
+          onClick={() => onLog(quest)}
+          disabled={defeated}
+        >
+          {defeated ? "Defeated" : "Log progress"}
+        </button>
+      )}
     </article>
   );
 }
