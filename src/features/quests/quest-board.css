@@ -69,6 +69,49 @@
   gap: var(--space-2);
 }
 
+.quest-board__parent-links {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.quest-board__streak {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dim);
+}
+
+.quest-board__streak--lit {
+  color: var(--accent-weekly);
+}
+
+.quest-board__flame {
+  width: 16px;
+  opacity: 0.4;
+}
+
+.quest-board__streak--lit .quest-board__flame {
+  opacity: 1;
+}
+
+.quest-board__toast {
+  position: fixed;
+  right: var(--space-2);
+  bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+  left: var(--space-2);
+  z-index: 5;
+  margin: 0;
+  padding: var(--space-2);
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+  color: var(--ink-dark);
+  background: var(--accent-weekly);
+  box-shadow: 0 8px 0 0 var(--shadow);
+}
+
 .quest-board__manage {
   display: inline-flex;
   align-items: center;

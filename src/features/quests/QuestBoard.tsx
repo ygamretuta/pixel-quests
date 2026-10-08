@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { lockParent, renameMonster } from "./actions";
+import { lockParent, renameMonster, unlockParent } from "./actions";
 import { LogDialog, PinDialog } from "./ParentDialogs";
 import { MonsterCard } from "./MonsterCard";
 import { PixelSprite } from "@/shared/pixel/PixelSprite";
-import { coin, padlock } from "./sprites";
+import { coin, flame, padlock } from "./sprites";
+import { nextMilestone } from "./streak";
 import { characterLayers } from "@/features/wardrobe/character";
 import { equippedPet } from "@/features/wardrobe/pets";
 import type { Board as BoardData, QuestRow } from "./types";
@@ -26,6 +27,7 @@ function Board({ board, isParent }: QuestBoardProps) {
   const [celebrations, setCelebrations] = useState<Record<string, number>>({});
   const [pinOpen, setPinOpen] = useState(false);
   const [logging, setLogging] = useState<QuestRow | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   // When a respawn time passes while the app is open, reload the data (monsters are back).
@@ -37,7 +39,11 @@ function Board({ board, isParent }: QuestBoardProps) {
     if (now && now >= nextReset) router.refresh();
   }, [now, nextReset, router]);
 
-  function onLogged(questId: string, defeated: boolean) {
+  function onLogged(
+    questId: string,
+    defeated: boolean,
+    bonus: { streak: number; bonus: number } | null,
+  ) {
     setCelebrations((current) => ({ ...current, [questId]: (current[questId] ?? 0) + 1 }));
     if (defeated) {
       play("defeat");
@@ -45,7 +51,14 @@ function Board({ board, isParent }: QuestBoardProps) {
     } else {
       play("hit");
     }
+    if (bonus) {
+      setToast(`${bonus.streak}-day streak! +${bonus.bonus} bonus coins`);
+      setTimeout(() => setToast(null), 5000);
+    }
   }
+
+  const { current: streakDays } = board.streak;
+  const upNext = nextMilestone(streakDays);
 
   return (
     <main className="quest-board">
@@ -97,11 +110,29 @@ function Board({ board, isParent }: QuestBoardProps) {
       {isParent && (
         <div className="quest-board__parent-bar">
           <p className="quest-board__banner">Parent mode</p>
-          <Link href="/manage" className="pixel-button quest-board__manage">
-            Manage quests
-          </Link>
+          <div className="quest-board__parent-links">
+            <Link href="/summary" className="pixel-button quest-board__manage">
+              Week
+            </Link>
+            <Link href="/manage" className="pixel-button quest-board__manage">
+              Quests
+            </Link>
+          </div>
         </div>
       )}
+
+      <div
+        className={"quest-board__streak" + (streakDays > 0 ? " quest-board__streak--lit" : "")}
+        aria-label={`${streakDays} day streak`}
+      >
+        <span className="quest-board__flame">
+          <PixelSprite sprite={flame} label="" />
+        </span>
+        <span>
+          {streakDays} day streak
+          {upNext ? ` · ${upNext} days = bonus!` : ""}
+        </span>
+      </div>
 
       <h1 className="quest-board__title">Today&apos;s Quests</h1>
       <div className="quest-board__grid">
@@ -148,7 +179,15 @@ function Board({ board, isParent }: QuestBoardProps) {
         </section>
       )}
 
-      {pinOpen && !isParent && <PinDialog onClose={() => setPinOpen(false)} />}
+      {toast && (
+        <p className="quest-board__toast" role="status">
+          {toast}
+        </p>
+      )}
+
+      {pinOpen && !isParent && (
+        <PinDialog onSubmit={unlockParent} onClose={() => setPinOpen(false)} />
+      )}
       {logging && (
         <LogDialog quest={logging} onClose={() => setLogging(null)} onLogged={onLogged} />
       )}

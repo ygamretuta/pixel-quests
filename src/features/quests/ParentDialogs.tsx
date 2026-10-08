@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { logProgress, unlockParent } from "./actions";
+import { logProgress } from "./actions";
 import type { QuestRow } from "./types";
 import { resizeImage } from "@/shared/images/resizeImage";
 import "./parent-dialogs.css";
@@ -10,7 +10,17 @@ function openOnMount(element: HTMLDialogElement | null) {
   if (element && !element.open) element.showModal();
 }
 
-export function PinDialog({ onClose }: { onClose: () => void }) {
+type PinResult = { ok: true } | { ok: false; error: "wrong" | "locked" };
+
+type PinDialogProps = {
+  title?: string;
+  confirmLabel?: string;
+  /** Resolves ok to close the dialog; a failure shows the error and clears the PIN. */
+  onSubmit: (pin: string) => Promise<PinResult>;
+  onClose: () => void;
+};
+
+export function PinDialog({ title = "Parent PIN", confirmLabel = "Unlock", onSubmit, onClose }: PinDialogProps) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -18,7 +28,7 @@ export function PinDialog({ onClose }: { onClose: () => void }) {
   function submit(event: React.FormEvent) {
     event.preventDefault();
     startTransition(async () => {
-      const result = await unlockParent(pin);
+      const result = await onSubmit(pin);
       if (result.ok) {
         onClose();
       } else {
@@ -31,7 +41,7 @@ export function PinDialog({ onClose }: { onClose: () => void }) {
   return (
     <dialog ref={openOnMount} className="dialog" onClose={onClose}>
       <form className="dialog__form" onSubmit={submit}>
-        <h2 className="dialog__title">Parent PIN</h2>
+        <h2 className="dialog__title">{title}</h2>
         <input
           className="dialog__input"
           type="password"
@@ -50,7 +60,7 @@ export function PinDialog({ onClose }: { onClose: () => void }) {
             Cancel
           </button>
           <button type="submit" className="pixel-button" disabled={pending || pin.length < 4}>
-            {pending ? "..." : "Unlock"}
+            {pending ? "..." : confirmLabel}
           </button>
         </div>
       </form>
@@ -61,7 +71,7 @@ export function PinDialog({ onClose }: { onClose: () => void }) {
 type LogDialogProps = {
   quest: QuestRow;
   onClose: () => void;
-  onLogged: (questId: string, defeated: boolean) => void;
+  onLogged: (questId: string, defeated: boolean, bonus: { streak: number; bonus: number } | null) => void;
 };
 
 const ERRORS = {
@@ -91,7 +101,7 @@ export function LogDialog({ quest, onClose, onLogged }: LogDialogProps) {
         if (photo) formData.set("photo", await resizeImage(photo.file));
         const result = await logProgress(formData);
         if (result.ok) {
-          onLogged(quest.id, result.defeated);
+          onLogged(quest.id, result.defeated, result.bonus);
           onClose();
         } else {
           setError(ERRORS[result.error]);

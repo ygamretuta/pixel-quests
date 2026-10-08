@@ -39,3 +39,20 @@ export function formatCountdown(ms: number) {
   if (hours > 0) return `${hours}h ${minutes}m`;
   return `${minutes}m`;
 }
+
+/** Moves a "YYYY-MM-DD" day key by whole days. */
+export function shiftDay(key: string, days: number) {
+  const date = new Date(`${key}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+/** The Monday of the week containing a day key. */
+export function mondayOf(key: string) {
+  const weekday = new Date(`${key}T00:00:00Z`).getUTCDay();
+  return shiftDay(key, -((weekday + 6) % 7));
+}
+
+export function weekDays(monday: string) {
+  return Array.from({ length: 7 }, (_, i) => shiftDay(monday, i));
+}

@@ -1,3 +1,4 @@
+import { mirror } from "@/shared/pixel/mirror";
 import type { Sprite } from "@/shared/pixel/PixelSprite";
 
 export type { Sprite };
@@ -85,4 +86,9 @@ export const padlock: Sprite = {
     "oooooooo",
   ],
   palette: { o: "#1b1b3a", y: "#ffd34d" },
+};
+
+export const flame: Sprite = {
+  rows: mirror(["...r", "..rr", ".rrr", ".rry", "rrry", "rryy", "rryy", "rrry", ".rrr"]),
+  palette: { r: "#ff7a59", y: "#ffd34d" },
 };

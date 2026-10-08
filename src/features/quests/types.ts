@@ -1,4 +1,5 @@
 import type { Equipped } from "@/features/wardrobe/items";
+import type { Streak } from "./streak";
 
 export type QuestRow = {
   id: string;
@@ -17,6 +18,7 @@ export type Board = {
   asOf: number;
   coins: number;
   equipped: Equipped;
+  streak: Streak;
   quests: QuestRow[];
   evidence: EvidenceRow[];
 };

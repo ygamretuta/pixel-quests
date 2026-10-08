@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { archiveQuest, saveQuest } from "./actions";
+import { archiveQuest, moveQuest, restoreQuest, saveQuest } from "./actions";
 import { MONSTERS, spritesByKey } from "../monsters";
 import { PixelSprite } from "@/shared/pixel/PixelSprite";
 import type { ManagedQuest } from "@/server/board";
@@ -21,6 +21,7 @@ const BLANK: ManagedQuest = {
   maxHp: 1,
   reward: 5,
   sprite: "slime",
+  active: true,
 };
 
 function QuestForm({ quest, onClose }: { quest: ManagedQuest; onClose: () => void }) {
@@ -137,6 +138,8 @@ function QuestForm({ quest, onClose }: { quest: ManagedQuest; onClose: () => voi
 export function QuestManager({ quests }: { quests: ManagedQuest[] }) {
   const [editing, setEditing] = useState<ManagedQuest | null>(null);
   const [pending, startTransition] = useTransition();
+  const active = quests.filter((quest) => quest.active);
+  const removed = quests.filter((quest) => !quest.active);
 
   function archive(quest: ManagedQuest) {
     if (!window.confirm(`Remove "${quest.title}" from the board?`)) return;
@@ -156,10 +159,10 @@ export function QuestManager({ quests }: { quests: ManagedQuest[] }) {
 
       <h1 className="manage__title">Manage quests</h1>
 
-      {quests.length === 0 && <p className="manage__empty">No quests yet. Add the first one!</p>}
+      {active.length === 0 && <p className="manage__empty">No quests yet. Add the first one!</p>}
 
       <ul className="manage__list">
-        {quests.map((quest) => (
+        {active.map((quest, index) => (
           <li key={quest.id} className={`manage__item manage__item--${quest.cadence}`}>
             <div className="manage__thumb">
               <PixelSprite sprite={spritesByKey[quest.sprite] ?? slime} label={quest.monsterName} />
@@ -171,6 +174,24 @@ export function QuestManager({ quests }: { quests: ManagedQuest[] }) {
               </span>
             </div>
             <div className="manage__buttons">
+              <button
+                type="button"
+                className="pixel-button pixel-button--secondary manage__move"
+                aria-label={`Move ${quest.title} up`}
+                disabled={pending || index === 0}
+                onClick={() => startTransition(async () => moveQuest(quest.id, "up"))}
+              >
+                <span className="manage__arrow manage__arrow--up" />
+              </button>
+              <button
+                type="button"
+                className="pixel-button pixel-button--secondary manage__move"
+                aria-label={`Move ${quest.title} down`}
+                disabled={pending || index === active.length - 1}
+                onClick={() => startTransition(async () => moveQuest(quest.id, "down"))}
+              >
+                <span className="manage__arrow manage__arrow--down" />
+              </button>
               <button type="button" className="pixel-button" onClick={() => setEditing(quest)}>
                 Edit
               </button>
@@ -186,6 +207,37 @@ export function QuestManager({ quests }: { quests: ManagedQuest[] }) {
           </li>
         ))}
       </ul>
+
+      {removed.length > 0 && (
+        <section className="manage__removed">
+          <h2 className="manage__subtitle">Removed quests</h2>
+          <ul className="manage__list">
+            {removed.map((quest) => (
+              <li key={quest.id} className="manage__item manage__item--removed">
+                <div className="manage__thumb">
+                  <PixelSprite sprite={spritesByKey[quest.sprite] ?? slime} label={quest.monsterName} />
+                </div>
+                <div className="manage__info">
+                  <span className="manage__item-title">{quest.title}</span>
+                  <span className="manage__meta">
+                    {quest.cadence} · {quest.maxHp} HP · {quest.reward} coins
+                  </span>
+                </div>
+                <div className="manage__buttons">
+                  <button
+                    type="button"
+                    className="pixel-button"
+                    disabled={pending}
+                    onClick={() => startTransition(async () => restoreQuest(quest.id))}
+                  >
+                    Restore
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {editing && <QuestForm key={editing.id || "new"} quest={editing} onClose={() => setEditing(null)} />}
     </main>

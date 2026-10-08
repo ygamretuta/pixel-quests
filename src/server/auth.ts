@@ -40,7 +40,8 @@ function pinMatches(pin: string) {
 
 export type UnlockResult = { ok: true } | { ok: false; error: "wrong" | "locked" };
 
-export async function unlock(pin: string): Promise<UnlockResult> {
+/** Checks the PIN (with attempt limiting) without starting a parent session. */
+export async function checkPin(pin: string): Promise<UnlockResult> {
   const [{ recent }] = await sql`
     SELECT count(*)::int AS recent FROM pin_attempts
     WHERE at > now() - make_interval(mins => ${WINDOW_MINUTES})`;
@@ -52,6 +53,13 @@ export async function unlock(pin: string): Promise<UnlockResult> {
   }
 
   await sql`DELETE FROM pin_attempts`;
+  return { ok: true };
+}
+
+export async function unlock(pin: string): Promise<UnlockResult> {
+  const result = await checkPin(pin);
+  if (!result.ok) return result;
+
   const expires = String(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
   (await cookies()).set(COOKIE, `${expires}.${sign(expires)}`, {
     httpOnly: true,

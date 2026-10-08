@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { buyItem, takeOff, wearItem } from "./actions";
+import { PinDialog } from "@/features/quests/ParentDialogs";
 import { characterLayers, merchant, previewLayers } from "./character";
 import { PET_SPRITES, equippedPet } from "./pets";
 import { ITEMS, SLOT_LABELS, SLOTS, type Equipped, type Item } from "./items";
@@ -11,27 +12,39 @@ import { useSound } from "@/shared/audio/SoundProvider";
 import { PixelSprite } from "@/shared/pixel/PixelSprite";
 import "./shop.css";
 
-type ShopProps = { coins: number; owned: string[]; equipped: Equipped };
+type ShopProps = { coins: number; owned: string[]; equipped: Equipped; isParent: boolean };
 
 const GREETING = "Welcome, hero! Spend your coins on shiny armor!";
 
-export function Shop({ coins, owned, equipped }: ShopProps) {
+export function Shop({ coins, owned, equipped, isParent }: ShopProps) {
   const { play } = useSound();
   const [pending, startTransition] = useTransition();
   const [said, setSaid] = useState(GREETING);
   const pet = equippedPet(equipped);
+  const [approving, setApproving] = useState<Item | null>(null);
+
+  /** Runs the purchase; resolves ok unless the PIN itself was rejected. */
+  async function purchase(
+    item: Item,
+    pin?: string,
+  ): Promise<{ ok: true } | { ok: false; error: "wrong" | "locked" }> {
+    const result = await buyItem(item.id, pin);
+    if (result.ok) {
+      play("coin");
+      play("defeat");
+      setSaid(`You got the ${item.name}! Looking great!`);
+      return { ok: true };
+    }
+    if (result.error === "wrong" || result.error === "locked") {
+      return { ok: false, error: result.error };
+    }
+    setSaid(result.error === "poor" ? "Come back with more coins!" : GREETING);
+    return { ok: true };
+  }
 
   function buy(item: Item) {
-    startTransition(async () => {
-      const result = await buyItem(item.id);
-      if (result.ok) {
-        play("coin");
-        play("defeat");
-        setSaid(`You got the ${item.name}! Looking great!`);
-      } else {
-        setSaid(result.error === "poor" ? "Come back with more coins!" : GREETING);
-      }
-    });
+    if (isParent) startTransition(async () => void (await purchase(item)));
+    else setApproving(item);
   }
 
   function toggle(item: Item) {
@@ -122,6 +135,15 @@ export function Shop({ coins, owned, equipped }: ShopProps) {
           </ul>
         </section>
       ))}
+
+      {approving && (
+        <PinDialog
+          title="Ask a grown-up"
+          confirmLabel="Buy"
+          onSubmit={(pin) => purchase(approving, pin)}
+          onClose={() => setApproving(null)}
+        />
+      )}
     </main>
   );
 }

@@ -60,3 +60,29 @@ export async function archiveQuest(id: string) {
   await sql`UPDATE quests SET active = false WHERE id = ${id}`;
   refresh();
 }
+
+export async function restoreQuest(id: string) {
+  await requireParent();
+  await sql`
+    UPDATE quests
+    SET active = true, position = (SELECT coalesce(max(position), 0) + 1 FROM quests)
+    WHERE id = ${id}`;
+  refresh();
+}
+
+/** Moves a quest one place up or down among the active quests. */
+export async function moveQuest(id: string, direction: "up" | "down") {
+  await requireParent();
+  const rows = await sql`SELECT id FROM quests WHERE active ORDER BY position, id`;
+  const ids = rows.map((row) => row.id as string);
+  const from = ids.indexOf(id);
+  const to = direction === "up" ? from - 1 : from + 1;
+  if (from < 0 || to < 0 || to >= ids.length) return;
+
+  [ids[from], ids[to]] = [ids[to], ids[from]];
+  await sql`
+    UPDATE quests q SET position = o.pos
+    FROM unnest(${ids}::text[]) WITH ORDINALITY AS o(id, pos)
+    WHERE q.id = o.id`;
+  refresh();
+}

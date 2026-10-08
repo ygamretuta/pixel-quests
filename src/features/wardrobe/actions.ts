@@ -1,19 +1,28 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { checkPin, isParent } from "@/server/auth";
 import { sql } from "@/server/db";
 import { ITEMS_BY_ID, SLOTS, type Slot } from "./items";
 
-export type BuyResult = { ok: true } | { ok: false; error: "poor" | "owned" | "unknown" };
+export type BuyResult =
+  | { ok: true }
+  | { ok: false; error: "poor" | "owned" | "unknown" | "wrong" | "locked" };
 
 function refresh() {
   revalidatePath("/shop");
   revalidatePath("/");
 }
 
-export async function buyItem(itemId: string): Promise<BuyResult> {
+/** Buying needs a parent: either already in parent mode, or the PIN given with the purchase. */
+export async function buyItem(itemId: string, pin?: string): Promise<BuyResult> {
   const item = ITEMS_BY_ID[itemId];
   if (!item) return { ok: false, error: "unknown" };
+
+  if (!(await isParent())) {
+    const approval = await checkPin(pin ?? "");
+    if (!approval.ok) return approval;
+  }
 
   const [owned] = await sql`SELECT 1 FROM owned_items WHERE item_id = ${item.id}`;
   if (owned) return { ok: false, error: "owned" };

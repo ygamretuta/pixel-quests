@@ -3,6 +3,7 @@ import { connection } from "next/server";
 import { periodKey } from "@/shared/time/pht";
 import type { Board, QuestRow } from "@/features/quests/types";
 import { sql } from "./db";
+import { getStreak } from "./streak";
 import { getEquipped } from "./wardrobe";
 
 export async function getBoard(withEvidence: boolean): Promise<Board> {
@@ -11,7 +12,7 @@ export async function getBoard(withEvidence: boolean): Promise<Board> {
   const daily = periodKey("daily", now);
   const weekly = periodKey("weekly", now);
 
-  const [quests, wallet, evidence, equipped] = await Promise.all([
+  const [quests, wallet, evidence, equipped, streak] = await Promise.all([
     sql`
       SELECT q.id, q.title, q.monster_name AS "monsterName", q.cadence, q.max_hp AS "maxHp",
              q.reward, q.sprite,
@@ -28,12 +29,14 @@ export async function getBoard(withEvidence: boolean): Promise<Board> {
           ORDER BY h.created_at DESC LIMIT 12`
       : Promise.resolve([]),
     getEquipped(),
+    getStreak(now),
   ]);
 
   return {
     asOf: now,
     coins: wallet[0]?.coins ?? 0,
     equipped,
+    streak,
     quests: quests as QuestRow[],
     evidence: (evidence as { id: string; questTitle: string; createdAt: Date }[]).map((row) => ({
       id: Number(row.id),
@@ -51,12 +54,13 @@ export type ManagedQuest = {
   maxHp: number;
   reward: number;
   sprite: string;
+  active: boolean;
 };
 
 export async function getManagedQuests(): Promise<ManagedQuest[]> {
   await connection();
   const rows = await sql`
-    SELECT id, title, monster_name AS "monsterName", cadence, max_hp AS "maxHp", reward, sprite
-    FROM quests WHERE active ORDER BY position, id`;
+    SELECT id, title, monster_name AS "monsterName", cadence, max_hp AS "maxHp", reward, sprite, active
+    FROM quests ORDER BY position, id`;
   return rows as ManagedQuest[];
 }

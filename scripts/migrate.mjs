@@ -42,6 +42,12 @@ const statements = [
     slot text PRIMARY KEY,
     item_id text NOT NULL REFERENCES owned_items(item_id) ON DELETE CASCADE
   )`,
+  `ALTER TABLE quests ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now()`,
+  `CREATE TABLE IF NOT EXISTS streak_bonuses (
+    day text PRIMARY KEY,
+    streak int NOT NULL,
+    bonus int NOT NULL
+  )`,
   `INSERT INTO quests (id, title, monster_name, cadence, max_hp, reward, sprite, position) VALUES
     ('teeth', 'Brush Teeth', 'Gloop', 'daily', 2, 5, 'slime', 1),
     ('reading', 'Read a Story', 'Blip', 'daily', 1, 5, 'slime', 2),
