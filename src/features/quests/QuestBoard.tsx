@@ -9,6 +9,7 @@ import { MonsterCard } from "./MonsterCard";
 import { PixelSprite } from "@/shared/pixel/PixelSprite";
 import { coin, padlock } from "./sprites";
 import { characterLayers } from "@/features/wardrobe/character";
+import { equippedPet } from "@/features/wardrobe/pets";
 import type { Board as BoardData, QuestRow } from "./types";
 import { useSound } from "@/shared/audio/SoundProvider";
 import { nextRespawnAt } from "@/shared/time/pht";
@@ -20,6 +21,7 @@ type QuestBoardProps = { board: BoardData; isParent: boolean };
 function Board({ board, isParent }: QuestBoardProps) {
   const router = useRouter();
   const now = useNow();
+  const pet = equippedPet(board.equipped);
   const { play, muted, toggleMute } = useSound();
   const [celebrations, setCelebrations] = useState<Record<string, number>>({});
   const [pinOpen, setPinOpen] = useState(false);
@@ -51,6 +53,11 @@ function Board({ board, isParent }: QuestBoardProps) {
         <Link href="/shop" className="quest-board__hero" aria-label="Visit the merchant">
           <PixelSprite sprite={characterLayers(board.equipped)} label="Your hero" />
         </Link>
+        {pet && (
+          <div className="quest-board__pet">
+            <PixelSprite sprite={pet} label="Your pet" />
+          </div>
+        )}
         <div className="quest-board__coins" aria-label={`${board.coins} coins`}>
           <div className="quest-board__coin">
             <PixelSprite sprite={coin} label="Coins" />
@@ -87,7 +94,14 @@ function Board({ board, isParent }: QuestBoardProps) {
         </button>
       </header>
 
-      {isParent && <p className="quest-board__banner">Parent mode</p>}
+      {isParent && (
+        <div className="quest-board__parent-bar">
+          <p className="quest-board__banner">Parent mode</p>
+          <Link href="/manage" className="pixel-button quest-board__manage">
+            Manage quests
+          </Link>
+        </div>
+      )}
 
       <h1 className="quest-board__title">Today&apos;s Quests</h1>
       <div className="quest-board__grid">

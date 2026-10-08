@@ -49,8 +49,19 @@
 }
 
 .shop__hero {
-  width: 112px;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.shop__hero-body {
+  width: 96px;
   animation: shop-idle 1s steps(2, jump-none) infinite;
+}
+
+.shop__pet {
+  width: 40px;
+  animation: shop-idle 0.8s steps(2, jump-none) infinite;
 }
 
 .shop__merchant {
@@ -137,7 +148,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .shop__hero {
+  .shop__hero-body,
+  .shop__pet {
     animation: none;
   }
 }

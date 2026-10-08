@@ -42,3 +42,21 @@ export async function getBoard(withEvidence: boolean): Promise<Board> {
     })),
   };
 }
+
+export type ManagedQuest = {
+  id: string;
+  title: string;
+  monsterName: string;
+  cadence: "daily" | "weekly";
+  maxHp: number;
+  reward: number;
+  sprite: string;
+};
+
+export async function getManagedQuests(): Promise<ManagedQuest[]> {
+  await connection();
+  const rows = await sql`
+    SELECT id, title, monster_name AS "monsterName", cadence, max_hp AS "maxHp", reward, sprite
+    FROM quests WHERE active ORDER BY position, id`;
+  return rows as ManagedQuest[];
+}

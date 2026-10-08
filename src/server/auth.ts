@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { sql } from "./db";
 
 const COOKIE = "pq_parent";
@@ -19,6 +20,7 @@ function safeEqual(a: string, b: string) {
 }
 
 export async function isParent() {
+  await connection(); // the expiry check reads the clock, so this must be request-time
   const value = (await cookies()).get(COOKIE)?.value;
   if (!value) return false;
   const [expires, signature] = value.split(".");

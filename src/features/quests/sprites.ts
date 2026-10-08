@@ -72,8 +72,6 @@ export const pencil: Sprite = {
   palette: { o: "#1b1b3a", p: "#ff7a9c", y: "#ffd34d" },
 };
 
-export const spritesByKey: Record<string, Sprite> = { slime, gremlin };
-
 export const padlock: Sprite = {
   rows: [
     "..oooo..",

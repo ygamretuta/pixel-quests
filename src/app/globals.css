@@ -88,3 +88,17 @@ body {
   line-height: 24px;
   text-align: center;
 }
+
+.manage-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-2);
+}
+
+.manage-locked .pixel-button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}

@@ -1,6 +1,6 @@
 import type { Sprite } from "@/shared/pixel/PixelSprite";
 import { mirror } from "@/shared/pixel/mirror";
-import { ITEMS_BY_ID, type Equipped, type Slot, type Tier } from "./items";
+import { ITEMS_BY_ID, type Equipped, type Item, type Slot, type Tier } from "./items";
 
 const ROWS = 24;
 const BLANK = "........";
@@ -9,6 +9,12 @@ const BLANK = "........";
 function layer(start: number, halves: string[], palette: Record<string, string>): Sprite {
   const all = Array.from({ length: ROWS }, (_, y) => halves[y - start] ?? BLANK);
   return { rows: mirror(all), palette };
+}
+
+/** Builds a full-height layer from full 16-wide rows (for asymmetric items). */
+function fullLayer(start: number, rows: string[], palette: Record<string, string>): Sprite {
+  const all = Array.from({ length: ROWS }, (_, y) => rows[y - start] ?? ".".repeat(16));
+  return { rows: all, palette };
 }
 
 // A cute kid in a basic tee and skirt. Each row is the left half; it is mirrored.
@@ -54,52 +60,139 @@ export const baseCharacter: Sprite = layer(
   },
 );
 
+// a = main, A = dark edge, L = highlight, G = accent.
 const TIER_PALETTES: Record<Tier, Record<string, string>> = {
-  leather: { a: "#a0693a", A: "#5c3a1e", L: "#c98a55" },
-  iron: { a: "#9aa5b1", A: "#4a5560", L: "#d5dde5" },
-  rose: { a: "#ff8fb8", A: "#b8356a", L: "#ffd1e3" },
-  gold: { a: "#ffd34d", A: "#b8860b", L: "#fff3b0" },
+  leather: { a: "#a0693a", A: "#5c3a1e", L: "#c98a55", G: "#e0b050" },
+  iron: { a: "#9aa5b1", A: "#4a5560", L: "#d5dde5", G: "#4fc3f7" },
+  rose: { a: "#ff8fb8", A: "#b8356a", L: "#ffd1e3", G: "#fff0a0" },
+  gold: { a: "#ffd34d", A: "#b8860b", L: "#fff3b0", G: "#ff4d6d" },
 };
 
-const SHAPES: Record<Slot, { start: number; halves: string[] }> = {
+const CAPE_PALETTES: Record<Tier, Record<string, string>> = {
+  leather: { a: "#d94a4a", A: "#8a2a2a", L: "#ff8a8a", G: "#ffd34d" },
+  iron: { a: "#4a7fd9", A: "#2a4a8a", L: "#8ab4ff", G: "#ffd34d" },
+  rose: { a: "#ff8fb8", A: "#b8356a", L: "#ffd1e3", G: "#fff0a0" },
+  gold: { a: "#ffd34d", A: "#b8860b", L: "#fff3b0", G: "#ff4d6d" },
+};
+
+type Shape = { start: number; halves: string[] };
+
+const SHAPES: Record<"head" | "body" | "legs" | "feet" | "back", Record<Tier, Shape>> = {
   head: {
-    start: 0,
-    halves: [".....AAA", "...AAaaa", "..AaaLaa", ".AaaLaaa", ".Aaaaaaa", ".AAAAAAA"],
+    leather: {
+      start: 0,
+      halves: [".....AAA", "...AAaaa", "..AaaLaa", ".AaaLaaa", ".Aaaaaaa", ".AAAAAAA"],
+    },
+    iron: {
+      start: 0,
+      halves: [
+        ".....ALa",
+        "...AAaaa",
+        "..AaLaaa",
+        ".AaLaaaa",
+        ".Aaaaaaa",
+        ".AAAAAAA",
+        ".......a",
+        "..Aa...a",
+        "..Aa....",
+      ],
+    },
+    rose: {
+      start: 0,
+      halves: ["....aaGG", "...AaaaG", "..AaLaaa", ".AaaLaaa", ".Aaaaaaa", "AAAAAAAA"],
+    },
+    gold: {
+      start: 1,
+      halves: ["...A.A.A", "...aLaLa", "..AaaaaG", "..AAAAAA"],
+    },
   },
   body: {
-    start: 14,
-    halves: ["..AaaaLa", "...AaLaa", "...aaaaa", "...AAAAA"],
+    leather: { start: 14, halves: ["..AaaaLa", "...AaLaa", "...aaaaa", "...AAAAA"] },
+    iron: { start: 14, halves: [".AaaaLaa", "..AaaaaA", "...aLaaA", "...AAAAA"] },
+    rose: { start: 14, halves: ["..AaaaLa", "...AaaaG", "...aaLaa", "...AaAaA"] },
+    gold: { start: 14, halves: [".AaaaaLa", "..AaaLaG", "...aLaGG", "...AAAAA"] },
   },
   legs: {
-    start: 18,
-    halves: ["...AaaLa", "..AaaaaL", ".AAAAAAA"],
+    leather: { start: 18, halves: ["...AaaLa", "..AaaaaL", ".AAAAAAA"] },
+    iron: { start: 18, halves: ["...AaAaA", "..AaAaAa", ".AAAAAAA"] },
+    rose: { start: 18, halves: ["...aaaLa", "..aLaaaa", ".AaAaAaA"] },
+    gold: { start: 18, halves: ["...ALaaG", "..AaaaGG", ".AAAAAAA"] },
   },
   feet: {
-    start: 21,
-    halves: ["....AA..", "...AaL..", "..AaaaA."],
+    leather: { start: 21, halves: ["....AA..", "...AaL..", "..AaaaA."] },
+    iron: { start: 21, halves: ["...AAA..", "...AaL..", "..AaaaA."] },
+    rose: { start: 21, halves: ["...GaG..", "...aLa..", "..AaaaA."] },
+    gold: { start: 21, halves: ["...AGA..", "..AaLaA.", "..AaaaaA"] },
+  },
+  back: {
+    leather: cape(),
+    iron: cape(),
+    rose: cape(),
+    gold: cape(),
   },
 };
 
-export function itemLayer(slot: Slot, tier: Tier): Sprite {
-  const { start, halves } = SHAPES[slot];
+function cape(): Shape {
+  return {
+    start: 14,
+    halves: [
+      "Aaaaaaaa",
+      "Aaaaaaaa",
+      "Aaaaaaaa",
+      "Aaaaaaaa",
+      "Aaaaaaaa",
+      "AaaaaaaL",
+      "AaaLaaaa",
+      "AaaaaaAA",
+      "AAAAAAAA",
+    ],
+  };
+}
+
+const WAND_ROWS = [
+  "..............L.",
+  ".............LLL",
+  "..............L.",
+  "..............a.",
+  "..............a.",
+  "..............a.",
+  "..............a.",
+  "..............a.",
+  "..............A.",
+  "..............A.",
+];
+
+/** The picture of an equippable gear item (not pets). */
+export function itemLayer(item: Item): Sprite {
+  const tier = item.tier ?? "leather";
+  if (item.slot === "hand") return fullLayer(8, WAND_ROWS, TIER_PALETTES[tier]);
+  if (item.slot === "back") {
+    const { start, halves } = SHAPES.back[tier];
+    return layer(start, halves, CAPE_PALETTES[tier]);
+  }
+  const { start, halves } = SHAPES[item.slot as "head" | "body" | "legs" | "feet"][tier];
   return layer(start, halves, TIER_PALETTES[tier]);
 }
 
-const DRAW_ORDER: Slot[] = ["legs", "body", "feet", "head"];
+const BEHIND: Slot[] = ["back"];
+const FRONT: Slot[] = ["legs", "body", "feet", "head", "hand"];
 
-/** Base character plus whatever she is wearing, bottom layer first. */
-export function characterLayers(equipped: Equipped): Sprite[] {
-  const layers = [baseCharacter];
-  for (const slot of DRAW_ORDER) {
+function worn(equipped: Equipped, slots: Slot[]): Sprite[] {
+  return slots.flatMap((slot) => {
     const item = equipped[slot] ? ITEMS_BY_ID[equipped[slot]] : undefined;
-    if (item) layers.push(itemLayer(item.slot, item.tier));
-  }
-  return layers;
+    return item ? [itemLayer(item)] : [];
+  });
+}
+
+/** Cape behind, the basic kid, then whatever she is wearing on top. */
+export function characterLayers(equipped: Equipped): Sprite[] {
+  return [...worn(equipped, BEHIND), baseCharacter, ...worn(equipped, FRONT)];
 }
 
 /** The basic character wearing just one item, for shop previews. */
-export function previewLayers(slot: Slot, tier: Tier): Sprite[] {
-  return [baseCharacter, itemLayer(slot, tier)];
+export function previewLayers(item: Item): Sprite[] {
+  const piece = itemLayer(item);
+  return item.slot === "back" ? [piece, baseCharacter] : [baseCharacter, piece];
 }
 
 export const merchant: Sprite = {

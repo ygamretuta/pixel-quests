@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { buyItem, takeOff, wearItem } from "./actions";
 import { characterLayers, merchant, previewLayers } from "./character";
+import { PET_SPRITES, equippedPet } from "./pets";
 import { ITEMS, SLOT_LABELS, SLOTS, type Equipped, type Item } from "./items";
 import { coin } from "@/features/quests/sprites";
 import { useSound } from "@/shared/audio/SoundProvider";
@@ -18,6 +19,7 @@ export function Shop({ coins, owned, equipped }: ShopProps) {
   const { play } = useSound();
   const [pending, startTransition] = useTransition();
   const [said, setSaid] = useState(GREETING);
+  const pet = equippedPet(equipped);
 
   function buy(item: Item) {
     startTransition(async () => {
@@ -61,7 +63,14 @@ export function Shop({ coins, owned, equipped }: ShopProps) {
 
       <section className="shop__scene">
         <div className="shop__hero">
-          <PixelSprite sprite={characterLayers(equipped)} label="Your hero" />
+          <div className="shop__hero-body">
+            <PixelSprite sprite={characterLayers(equipped)} label="Your hero" />
+          </div>
+          {pet && (
+            <div className="shop__pet">
+              <PixelSprite sprite={pet} label="Your pet" />
+            </div>
+          )}
         </div>
         <div className="shop__merchant">
           <PixelSprite sprite={merchant} label="The merchant" />
@@ -79,7 +88,10 @@ export function Shop({ coins, owned, equipped }: ShopProps) {
               return (
                 <li key={item.id} className={"shop__item" + (isWorn ? " shop__item--worn" : "")}>
                   <div className="shop__preview">
-                    <PixelSprite sprite={previewLayers(item.slot, item.tier)} label={item.name} />
+                    <PixelSprite
+                      sprite={item.pet ? PET_SPRITES[item.pet] : previewLayers(item)}
+                      label={item.name}
+                    />
                   </div>
                   <span className="shop__name">{item.name}</span>
                   {isOwned ? (
