@@ -169,9 +169,20 @@
   cursor: pointer;
 }
 
-.monster-card__action:active {
+.monster-card__action:disabled {
+  color: var(--ink-dim);
+  background: var(--panel-edge);
+  box-shadow: none;
+  cursor: default;
+}
+
+.monster-card__action:not(:disabled):active {
   transform: translateY(4px);
   box-shadow: none;
+}
+
+.monster-card__monster--settled {
+  animation: none;
 }
 
 @keyframes monster-idle {

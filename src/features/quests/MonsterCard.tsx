@@ -5,6 +5,9 @@ import { PixelSprite } from "./PixelSprite";
 import type { Quest } from "./quests";
 import { coin, pencil } from "./sprites";
 import { useSound } from "@/shared/audio/SoundProvider";
+import { useLocalStorage } from "@/shared/storage/useLocalStorage";
+import { formatCountdown, nextRespawnAt, periodKey } from "@/shared/time/pht";
+import { useNow } from "@/shared/time/useNow";
 import "./monster-card.css";
 
 type MonsterCardProps = {
@@ -16,16 +19,23 @@ type MonsterCardProps = {
 
 const BURST_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315];
 
+type Progress = { period: string; hp: number } | null;
+
 export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProps) {
-  const [hp, setHp] = useState(quest.maxHp);
+  const now = useNow();
+  const [progress, setProgress] = useLocalStorage<Progress>(`pixel-quests:hp:${quest.id}`, null);
   const [hitCount, setHitCount] = useState(0);
   const [editing, setEditing] = useState(false);
   const { play } = useSound();
+  // Progress only counts within its respawn period; a new period (12:00 AM PHT) restores full HP.
+  const period = now ? periodKey(quest.cadence, now) : null;
+  const hp = progress && progress.period === period ? progress.hp : quest.maxHp;
   const defeated = hp === 0;
 
   function hit() {
+    if (!period) return;
     const next = hp - 1;
-    setHp(next);
+    setProgress({ period, hp: next });
     setHitCount((count) => count + 1);
     if (next === 0) {
       play("defeat");
@@ -34,10 +44,6 @@ export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProp
     } else {
       play("hit");
     }
-  }
-
-  function respawn() {
-    setHp(quest.maxHp);
   }
 
   function saveName(value: string) {
@@ -59,6 +65,7 @@ export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProp
           className={
             "monster-card__monster" +
             (defeated ? " monster-card__monster--defeated" : "") +
+            (defeated && hitCount === 0 ? " monster-card__monster--settled" : "") +
             (hitCount > 0 && !defeated ? " monster-card__monster--hit" : "")
           }
         >
@@ -66,18 +73,20 @@ export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProp
         </div>
         {defeated && (
           <>
-            <div className="monster-card__burst" aria-hidden="true">
-              {BURST_ANGLES.map((angle) => (
-                <span
-                  key={angle}
-                  className="monster-card__spark"
-                  style={{
-                    "--dx": `${Math.round(Math.cos((angle * Math.PI) / 180) * 64)}px`,
-                    "--dy": `${Math.round(Math.sin((angle * Math.PI) / 180) * 64)}px`,
-                  } as React.CSSProperties}
-                />
-              ))}
-            </div>
+            {hitCount > 0 && (
+              <div className="monster-card__burst" aria-hidden="true">
+                {BURST_ANGLES.map((angle) => (
+                  <span
+                    key={angle}
+                    className="monster-card__spark"
+                    style={{
+                      "--dx": `${Math.round(Math.cos((angle * Math.PI) / 180) * 64)}px`,
+                      "--dy": `${Math.round(Math.sin((angle * Math.PI) / 180) * 64)}px`,
+                    } as React.CSSProperties}
+                  />
+                ))}
+              </div>
+            )}
             <p className="monster-card__reward">
               <span className="monster-card__coin">
                 <PixelSprite sprite={coin} label="" />
@@ -139,9 +148,10 @@ export function MonsterCard({ quest, name, onRename, onDefeat }: MonsterCardProp
       <button
         type="button"
         className="monster-card__action"
-        onClick={defeated ? respawn : hit}
+        onClick={hit}
+        disabled={defeated || !period}
       >
-        {defeated ? "Respawn" : "Hit!"}
+        {defeated ? `Back in ${formatCountdown(nextRespawnAt(quest.cadence, now) - now)}` : "Hit!"}
       </button>
     </article>
   );
