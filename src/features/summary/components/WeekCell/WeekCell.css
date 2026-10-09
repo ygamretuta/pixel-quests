@@ -27,6 +27,16 @@
   box-shadow: inset 0 0 0 4px var(--accent-weekly);
 }
 
+.week-cell--shield {
+  background: #4fc3f7;
+}
+
+.week-cell--off {
+  color: var(--panel-edge);
+  background: transparent;
+  box-shadow: inset 0 0 0 4px var(--stage);
+}
+
 .week-cell--na,
 .week-cell--future {
   color: var(--ink-dim);

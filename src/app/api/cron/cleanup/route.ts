@@ -1,4 +1,6 @@
 import { del } from "@vercel/blob";
+import { saveBackup } from "@/features/backup/server/backup";
+import { periodKey } from "@/shared/lib/time/pht";
 import { sql } from "@/shared/server/db";
 
 // Keeps storage inside the free tier: drops evidence photos past the retention window.
@@ -20,5 +22,10 @@ export async function GET(request: Request) {
   }
   await sql`DELETE FROM pin_attempts WHERE at < now() - interval '1 day'`;
 
-  return Response.json({ deleted: old.length });
+  // Sundays (Philippine time): also save a backup of everything except photos.
+  const now = Date.now();
+  const isSunday = new Date(now + 8 * 60 * 60 * 1000).getUTCDay() === 0;
+  const backedUp = isSunday ? await saveBackup(periodKey("daily", now)) : null;
+
+  return Response.json({ deleted: old.length, backedUpRows: backedUp });
 }

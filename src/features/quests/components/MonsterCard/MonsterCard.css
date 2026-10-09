@@ -13,6 +13,7 @@
 }
 
 .monster-card__title {
+  flex: 1;
   margin: 0;
   font-size: 12px;
   line-height: 24px;
@@ -138,4 +139,31 @@
   .monster-card__spark {
     display: none;
   }
+}
+
+.monster-card__claim {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--stage);
+  box-shadow: inset 0 0 0 4px var(--accent-weekly);
+}
+
+.monster-card__claim-text {
+  margin: 0;
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--accent-weekly);
+}
+
+.monster-card__claim-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-1);
+}
+
+.monster-card__claim-button {
+  padding: 0 var(--space-half);
+  font-size: 8px;
 }

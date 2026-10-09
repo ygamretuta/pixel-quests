@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { cancelRequest, requestReward } from "@/features/rewards/actions";
+import { cancelRequest, requestReward, setGoal } from "@/features/rewards/actions";
+import { GoalBar } from "@/features/rewards/components/GoalBar/GoalBar";
 import { RewardCard } from "@/features/rewards/components/RewardCard/RewardCard";
-import type { Reward, RewardRequest } from "@/features/rewards/types";
+import type { Goal, Reward, RewardRequest } from "@/features/rewards/types";
 import { useSound } from "@/shared/audio/SoundProvider/SoundProvider";
 import { CoinBalance } from "@/shared/ui/CoinBalance/CoinBalance";
 import { PixelButton, PixelLinkButton } from "@/shared/ui/PixelButton/PixelButton";
@@ -15,11 +16,12 @@ type TreatsProps = {
   rewards: Reward[];
   pending: RewardRequest[];
   recent: RewardRequest[];
+  goal: Goal | null;
 };
 
 const HELLO = "Real treats! Save up coins, then ask a grown-up.";
 
-export function Treats({ coins, rewards, pending, recent }: TreatsProps) {
+export function Treats({ coins, rewards, pending, recent, goal }: TreatsProps) {
   const { play } = useSound();
   const [busy, startTransition] = useTransition();
   const [said, setSaid] = useState(HELLO);
@@ -43,6 +45,14 @@ export function Treats({ coins, rewards, pending, recent }: TreatsProps) {
     });
   }
 
+  function save(reward: Reward) {
+    startTransition(async () => {
+      const isGoal = goal?.rewardId === reward.id;
+      await setGoal(isGoal ? null : reward.id);
+      setSaid(isGoal ? "Okay, no goal for now." : `Saving up for ${reward.title}!`);
+    });
+  }
+
   function cancel(request: RewardRequest) {
     startTransition(async () => {
       await cancelRequest(request.id);
@@ -63,6 +73,8 @@ export function Treats({ coins, rewards, pending, recent }: TreatsProps) {
       <p className="treats__say" role="status">
         {said}
       </p>
+
+      {goal && <GoalBar goal={goal} coins={coins} />}
 
       {pending.length > 0 && (
         <section className="treats__section">
@@ -91,9 +103,18 @@ export function Treats({ coins, rewards, pending, recent }: TreatsProps) {
           {rewards.map((reward) => {
             const waiting = waitingFor.has(reward.id);
             return (
-              <RewardCard key={reward.id} title={reward.title} icon={reward.icon}>
+              <RewardCard
+                key={reward.id}
+                title={reward.title}
+                icon={reward.icon}
+                detail={goal?.rewardId === reward.id ? "Your goal" : undefined}
+                speech={`${reward.title}. It costs ${reward.cost} coins.`}
+              >
                 <PixelButton disabled={busy || waiting || coins < reward.cost} onClick={() => ask(reward)}>
                   <PriceTag>{waiting ? "Asked" : reward.cost}</PriceTag>
+                </PixelButton>
+                <PixelButton variant="secondary" disabled={busy} onClick={() => save(reward)}>
+                  {goal?.rewardId === reward.id ? "Unsave" : "Save up"}
                 </PixelButton>
               </RewardCard>
             );

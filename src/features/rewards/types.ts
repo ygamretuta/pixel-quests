@@ -14,3 +14,6 @@ export type RewardRequest = {
   status: "pending" | "approved" | "denied" | "cancelled";
   createdAt: string;
 };
+
+/** The reward she is saving coins for. */
+export type Goal = { rewardId: string; title: string; cost: number; icon: string };

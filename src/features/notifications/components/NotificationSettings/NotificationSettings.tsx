@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { removeSubscription, saveSubscription, sendTestNotification } from "@/features/notifications/actions";
+import {
+  getDeviceRole,
+  removeSubscription,
+  saveSubscription,
+  sendTestNotification,
+  type DeviceRole,
+} from "@/features/notifications/actions";
 import { urlBase64ToUint8Array } from "@/features/notifications/lib/applicationServerKey";
 import { cx } from "@/shared/lib/css/cx";
 import { panelClass } from "@/shared/ui/Panel/panelClass";
@@ -20,11 +26,16 @@ function readSupport(): Support {
 
 const subscribeNever = () => () => {};
 
-type NotificationSettingsProps = { publicKey: string; devices: number };
+type NotificationSettingsProps = {
+  publicKey: string;
+  devices: { parents: number; children: number };
+  childName: string;
+};
 
-export function NotificationSettings({ publicKey, devices }: NotificationSettingsProps) {
+export function NotificationSettings({ publicKey, devices, childName }: NotificationSettingsProps) {
   const support = useSyncExternalStore(subscribeNever, readSupport, () => "unknown" as Support);
   const [subscribed, setSubscribed] = useState<boolean | null>(null);
+  const [role, setRole] = useState<DeviceRole>("parent");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -35,8 +46,13 @@ export function NotificationSettings({ publicKey, devices }: NotificationSetting
     void navigator.serviceWorker
       .getRegistration("/sw.js")
       .then((registration) => registration?.pushManager.getSubscription())
-      .then((existing) => {
-        if (!cancelled) setSubscribed(Boolean(existing));
+      .then(async (existing) => {
+        if (cancelled) return;
+        setSubscribed(Boolean(existing));
+        if (existing) {
+          const saved = await getDeviceRole(existing.endpoint);
+          if (!cancelled && saved) setRole(saved);
+        }
       })
       .catch(() => {
         if (!cancelled) setSubscribed(false);
@@ -61,7 +77,7 @@ export function NotificationSettings({ publicKey, devices }: NotificationSetting
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey),
       });
-      await saveSubscription(subscription.toJSON() as Parameters<typeof saveSubscription>[0]);
+      await saveSubscription(subscription.toJSON() as Parameters<typeof saveSubscription>[0], role);
       setSubscribed(true);
       setMessage("On! Tap \"Send test\" to try it.");
     } catch {
@@ -106,7 +122,9 @@ export function NotificationSettings({ publicKey, devices }: NotificationSetting
     <section className={cx("notification-settings", panelClass())}>
       <h2 className="notification-settings__title">Notifications</h2>
       <p className="notification-settings__hint">
-        Get a message on this phone when she asks for a reward. {devices} {devices === 1 ? "phone is" : "phones are"} signed up.
+        Grown-up phones get a message when {childName} asks for a reward or says she did a quest. A child&apos;s tablet gets
+        quest reminders. {devices.parents} grown-up and {devices.children} child{" "}
+        {devices.children === 1 ? "device is" : "devices are"} signed up.
       </p>
 
       {support === "needs-install" && (
@@ -117,6 +135,20 @@ export function NotificationSettings({ publicKey, devices }: NotificationSetting
       )}
       {support === "unsupported" && (
         <p className="notification-settings__note">This browser can&apos;t receive notifications.</p>
+      )}
+
+      {support === "ready" && !subscribed && (
+        <fieldset className="notification-settings__role">
+          <legend className="notification-settings__legend">Who uses this device?</legend>
+          <label className="notification-settings__choice">
+            <input type="radio" name="role" checked={role === "parent"} onChange={() => setRole("parent")} />
+            <span>A grown-up (alerts)</span>
+          </label>
+          <label className="notification-settings__choice">
+            <input type="radio" name="role" checked={role === "child"} onChange={() => setRole("child")} />
+            <span>{childName} (reminders)</span>
+          </label>
+        </fieldset>
       )}
 
       {support === "ready" && (
@@ -130,7 +162,7 @@ export function NotificationSettings({ publicKey, devices }: NotificationSetting
               Turn on
             </PixelButton>
           )}
-          <PixelButton variant="secondary" disabled={busy || devices === 0} onClick={test}>
+          <PixelButton variant="secondary" disabled={busy || devices.parents + devices.children === 0} onClick={test}>
             Send test
           </PixelButton>
         </div>

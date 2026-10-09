@@ -1,0 +1,46 @@
+.shield-boost {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.shield-boost__title {
+  margin: 0;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+.shield-boost__card {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.shield-boost__icon {
+  width: 40px;
+}
+
+.shield-boost__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-half);
+  font-size: 12px;
+  line-height: 24px;
+}
+
+.shield-boost__detail,
+.shield-boost__note {
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dim);
+}
+
+.shield-boost__note {
+  margin: 0;
+}
+
+.shield-boost__button {
+  grid-column: 1 / -1;
+}

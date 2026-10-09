@@ -11,7 +11,7 @@ import "./BedtimeSettings.css";
 
 type FormState = { message: string | null; error: string | null; values: Record<string, string> | null };
 
-export function BedtimeSettings({ settings }: { settings: Settings }) {
+export function BedtimeSettings({ settings, childName }: { settings: Settings; childName: string }) {
   const [state, submit, pending] = useActionState<FormState, FormData>(
     async (_previous, formData) => {
       const result = await saveBedtime(formData);
@@ -28,7 +28,7 @@ export function BedtimeSettings({ settings }: { settings: Settings }) {
 
   return (
     <section className={cx("bedtime-settings", panelClass())}>
-      <h2 className="bedtime-settings__title">Bedtime</h2>
+      <h2 className="bedtime-settings__title">Bedtime for {childName}</h2>
       <p className="bedtime-settings__hint">
         After bedtime the app shows a sleepy screen until morning (Philippine time). You can still get in with your PIN.
       </p>

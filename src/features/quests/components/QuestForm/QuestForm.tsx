@@ -1,8 +1,9 @@
 "use client";
 
 import { saveQuest } from "@/features/quests/manage-actions";
-import { MONSTERS } from "@/features/quests/data/monsters";
+import { MONSTERS } from "@/features/monsters/data/monsters";
 import type { ManagedQuest } from "@/features/quests/types";
+import { WEEKDAY_NAMES, daysFromMask } from "@/shared/lib/time/schedule";
 import { Choice, ChoicePicture } from "@/shared/ui/Choice/Choice";
 import { ChoiceGroup } from "@/shared/ui/ChoiceGroup/ChoiceGroup";
 import { FormDialog } from "@/shared/ui/FormDialog/FormDialog";
@@ -45,6 +46,33 @@ export function QuestForm({ quest, onClose }: QuestFormProps) {
               </Choice>
             ))}
           </ChoiceGroup>
+
+          <fieldset className="quest-form__days">
+            <legend className="quest-form__legend">Days (daily quests)</legend>
+            {WEEKDAY_NAMES.map((name, day) => (
+              <label key={name} className="quest-form__day">
+                <input
+                  className="quest-form__day-input"
+                  type="checkbox"
+                  name="days"
+                  value={day}
+                  defaultChecked={
+                    Object.keys(values).length > 0
+                      ? (values.days?.split(",") ?? []).includes(String(day))
+                      : daysFromMask(quest.days).includes(day)
+                  }
+                />
+                <span className="quest-form__day-box">{name.slice(0, 2)}</span>
+              </label>
+            ))}
+          </fieldset>
+
+          <TextField
+            label="Reminder on her tablet (optional)"
+            name="remindAt"
+            type="time"
+            defaultValue={values.remindAt ?? quest.remindAt ?? ""}
+          />
 
           <div className="quest-form__row">
             <TextField

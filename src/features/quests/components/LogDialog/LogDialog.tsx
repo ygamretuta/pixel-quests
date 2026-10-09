@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { logProgress } from "@/features/quests/actions";
-import type { QuestRow, StreakBonus } from "@/features/quests/types";
+import type { HitOutcome, QuestRow } from "@/features/quests/types";
 import { resizeImage } from "@/shared/lib/images/resizeImage";
 import { FormDialog } from "@/shared/ui/FormDialog/FormDialog";
 import "./LogDialog.css";
@@ -10,7 +10,7 @@ import "./LogDialog.css";
 type LogDialogProps = {
   quest: QuestRow;
   onClose: () => void;
-  onLogged: (questId: string, defeated: boolean, bonus: StreakBonus | null) => void;
+  onLogged: (questId: string, outcome: HitOutcome) => void;
 };
 
 const ERRORS = {
@@ -36,7 +36,7 @@ export function LogDialog({ quest, onClose, onLogged }: LogDialogProps) {
 
       const result = await logProgress(body);
       if (result.ok) {
-        onLogged(quest.id, result.defeated, result.bonus);
+        onLogged(quest.id, result);
         return null;
       }
       choose(undefined); // the form resets its file input after an error

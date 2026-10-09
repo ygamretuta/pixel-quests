@@ -61,6 +61,8 @@ export function WeeklySummary({ summary }: { summary: WeekSummary }) {
           <WeekCellSwatch state="done" /> done
           <WeekCellSwatch state="miss" /> missed
           <WeekCellSwatch state="rest" /> rest
+          <WeekCellSwatch state="shield" /> shield
+          <WeekCellSwatch state="off" /> no quest
           <WeekCellSwatch state="today" /> today
           <WeekCellSwatch state="na" /> not started
         </p>

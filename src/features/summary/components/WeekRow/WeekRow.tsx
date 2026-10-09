@@ -1,5 +1,5 @@
-import { spritesByKey } from "@/features/quests/data/monsters";
-import { slime } from "@/features/quests/data/sprites";
+import { spritesByKey } from "@/features/monsters/data/monsters";
+import { slime } from "@/features/monsters/data/sprites";
 import { WeekCell } from "@/features/summary/components/WeekCell/WeekCell";
 import { WEEKDAY_LETTERS, formatDay } from "@/features/summary/lib/dates";
 import type { Cell } from "@/features/summary/types";
@@ -15,6 +15,8 @@ const CELL_LABEL: Record<Cell, string> = {
   future: "upcoming",
   today: "in progress",
   rest: "rest day",
+  off: "no quest today",
+  shield: "saved by a shield",
 };
 
 type WeekRowProps = {

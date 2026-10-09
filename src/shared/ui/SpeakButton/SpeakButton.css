@@ -1,0 +1,21 @@
+.speak-button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-height);
+  height: var(--control-height);
+  padding: 0;
+  background: var(--stage);
+  border: 0;
+  box-shadow: inset 0 0 0 4px var(--panel-edge);
+  cursor: pointer;
+}
+
+.speak-button:active {
+  background: var(--panel-edge);
+}
+
+.speak-button__icon {
+  width: 16px;
+}

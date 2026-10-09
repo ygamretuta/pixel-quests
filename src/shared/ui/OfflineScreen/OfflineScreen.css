@@ -1,0 +1,24 @@
+.offline-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 100dvh;
+  padding: var(--space-4) var(--space-2);
+  text-align: center;
+}
+
+.offline-screen__title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+  color: var(--accent-weekly);
+}
+
+.offline-screen__message {
+  max-width: 320px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 24px;
+}

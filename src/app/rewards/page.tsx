@@ -3,13 +3,14 @@ import { ParentOnly } from "@/features/parent/components/ParentOnly/ParentOnly";
 import { isParent } from "@/features/parent/server/auth";
 import { RewardsAdmin } from "@/features/rewards/components/RewardsAdmin/RewardsAdmin";
 import { getRewardsAdmin } from "@/features/rewards/server/rewards";
+import { getChildId } from "@/shared/server/child";
 import { Loading } from "@/shared/ui/Loading/Loading";
 
 export const metadata = { title: "Rewards · Pixel Quests" };
 
 async function RewardsLoader() {
   if (!(await isParent())) return <ParentOnly />;
-  return <RewardsAdmin {...(await getRewardsAdmin())} />;
+  return <RewardsAdmin {...(await getRewardsAdmin(await getChildId()))} />;
 }
 
 export default function RewardsPage() {

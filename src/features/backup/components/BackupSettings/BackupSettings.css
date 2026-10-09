@@ -1,0 +1,23 @@
+.backup-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.backup-settings__title {
+  margin: 0;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+.backup-settings__hint {
+  margin: 0;
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dim);
+}
+
+.backup-settings__download {
+  align-self: flex-start;
+}

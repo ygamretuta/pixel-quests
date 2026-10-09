@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm check && next build",
     "start": "next start",
     "lint": "eslint",
     "lint:css": "node scripts/check-bem.mjs",
-    "check": "pnpm lint && pnpm lint:css && tsc --noEmit"
+    "check": "pnpm lint && pnpm lint:css && tsc --noEmit && pnpm test",
+    "test": "vitest run"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
@@ -26,7 +27,8 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.3"
   },
   "packageManager": "pnpm@10.28.0"
 }

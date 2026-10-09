@@ -1,11 +1,12 @@
 import "server-only";
 import { connection } from "next/server";
 import { mondayOf, periodKey, weekDays } from "@/shared/lib/time/pht";
+import { isScheduled } from "@/shared/lib/time/schedule";
 import { getStreak } from "@/features/quests/server/streak";
 import { sql } from "@/shared/server/db";
 import type { Cell, WeekSummary } from "@/features/summary/types";
 
-export async function getWeekSummary(requestedMonday: string | null): Promise<WeekSummary> {
+export async function getWeekSummary(childId: number, requestedMonday: string | null): Promise<WeekSummary> {
   await connection();
   const now = Date.now();
   const today = periodKey("daily", now);
@@ -15,16 +16,17 @@ export async function getWeekSummary(requestedMonday: string | null): Promise<We
 
   const [quests, hitRows, bonusRows, streak, restRows] = await Promise.all([
     sql`
-      SELECT id, title, cadence, max_hp AS "maxHp", reward, sprite, active,
+      SELECT id, title, cadence, max_hp AS "maxHp", reward, sprite, active, days,
              (created_at AT TIME ZONE 'Asia/Manila')::date::text AS created
-      FROM quests ORDER BY position, id`,
+      FROM quests WHERE child_id = ${childId} ORDER BY position, id`,
     sql`
-      SELECT quest_id AS "questId", period, count(*)::int AS n, count(evidence_path)::int AS proofs
-      FROM hits WHERE period = ANY(${days})
-      GROUP BY quest_id, period`,
-    sql`SELECT coalesce(sum(bonus), 0)::int AS bonus FROM streak_bonuses WHERE day = ANY(${days})`,
-    getStreak(now),
-    sql`SELECT day FROM rest_days WHERE day = ANY(${days})`,
+      SELECT h.quest_id AS "questId", h.period, count(*)::int AS n, count(h.evidence_path)::int AS proofs
+      FROM hits h JOIN quests q ON q.id = h.quest_id
+      WHERE q.child_id = ${childId} AND h.period = ANY(${days})
+      GROUP BY h.quest_id, h.period`,
+    sql`SELECT coalesce(sum(bonus), 0)::int AS bonus FROM streak_bonuses WHERE child_id = ${childId} AND day = ANY(${days})`,
+    getStreak(childId, now),
+    sql`SELECT day FROM rest_days WHERE child_id = ${childId} AND day = ANY(${days})`,
   ]);
   const restDays = restRows.map((row) => row.day as string);
 
@@ -41,8 +43,10 @@ export async function getWeekSummary(requestedMonday: string | null): Promise<We
     const cells: Cell[] = days.map((day) => {
       if (day > today) return "future";
       if (quest.created > day) return "na";
+      if (!isScheduled(quest.days as number, day)) return "off";
       if (hitsFor(quest.id, day) >= quest.maxHp) return "done";
       if (restDays.includes(day)) return "rest";
+      if (streak.shieldDays.includes(day)) return "shield";
       return day === today ? "today" : "miss";
     });
     return {
@@ -69,7 +73,9 @@ export async function getWeekSummary(requestedMonday: string | null): Promise<We
     });
 
   const perfectDays = days.filter((day, index) => {
-    const cells = dailies.map((daily) => daily.cells[index]);
+    const cells = dailies
+      .map((daily) => daily.cells[index])
+      .filter((cell) => cell !== "off" && cell !== "na" && cell !== "future");
     return cells.length > 0 && cells.every((cell) => cell === "done");
   }).length;
 

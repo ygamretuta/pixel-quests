@@ -1,5 +1,5 @@
-import { spritesByKey } from "@/features/quests/data/monsters";
-import { slime } from "@/features/quests/data/sprites";
+import { spritesByKey } from "@/features/monsters/data/monsters";
+import { slime } from "@/features/monsters/data/sprites";
 import { cx } from "@/shared/lib/css/cx";
 import { HpBar } from "@/shared/ui/HpBar/HpBar";
 import { panelClass } from "@/shared/ui/Panel/panelClass";

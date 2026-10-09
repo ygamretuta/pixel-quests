@@ -16,14 +16,15 @@ function configure() {
 }
 
 export async function countPushDevices() {
-  const [row] = await sql`SELECT count(*)::int AS n FROM push_subscriptions`;
-  return row.n as number;
+  const rows = await sql`SELECT role, count(*)::int AS n FROM push_subscriptions GROUP BY role`;
+  const count = (role: string) => (rows.find((row) => row.role === role)?.n as number | undefined) ?? 0;
+  return { parents: count("parent"), children: count("child") };
 }
 
-/** Sends a notification to every phone a parent signed up. Dead subscriptions are cleaned up. */
-export async function notifyParents(payload: PushPayload) {
+type Device = { endpoint: string; p256dh: string; auth: string };
+
+async function sendToDevices(devices: Device[], payload: PushPayload) {
   configure();
-  const devices = await sql`SELECT endpoint, p256dh, auth FROM push_subscriptions`;
   let sent = 0;
 
   await Promise.all(
@@ -46,4 +47,17 @@ export async function notifyParents(payload: PushPayload) {
     }),
   );
   return sent;
+}
+
+/** Sends a notification to every phone a parent signed up. Dead subscriptions are cleaned up. */
+export async function notifyParents(payload: PushPayload) {
+  const devices = await sql`SELECT endpoint, p256dh, auth FROM push_subscriptions WHERE role = 'parent'`;
+  return sendToDevices(devices as Device[], payload);
+}
+
+/** Sends a reminder to the tablets or phones set up for one child. */
+export async function notifyChild(childId: number, payload: PushPayload) {
+  const devices = await sql`
+    SELECT endpoint, p256dh, auth FROM push_subscriptions WHERE role = 'child' AND child_id = ${childId}`;
+  return sendToDevices(devices as Device[], payload);
 }

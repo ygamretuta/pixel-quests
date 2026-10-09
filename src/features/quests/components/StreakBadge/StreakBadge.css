@@ -1,5 +1,18 @@
 .streak-badge {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-half);
+}
+
+.streak-badge__level {
+  margin: 0;
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--accent-daily);
+}
+
+.streak-badge__streak {
+  display: flex;
   align-items: center;
   gap: var(--space-1);
   font-size: 8px;
@@ -7,7 +20,7 @@
   color: var(--ink-dim);
 }
 
-.streak-badge--lit {
+.streak-badge__streak--lit {
   color: var(--accent-weekly);
 }
 
@@ -16,6 +29,18 @@
   opacity: 0.4;
 }
 
-.streak-badge--lit .streak-badge__flame {
+.streak-badge__streak--lit .streak-badge__flame {
   opacity: 1;
+}
+
+.streak-badge__shields {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-half);
+  margin-left: auto;
+  color: var(--accent-daily);
+}
+
+.streak-badge__shield {
+  width: 16px;
 }

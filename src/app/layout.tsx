@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Press_Start_2P } from "next/font/google";
 import { SoundProvider } from "@/shared/audio/SoundProvider/SoundProvider";
+import { ServiceWorkerRegistration } from "@/shared/ui/ServiceWorkerRegistration/ServiceWorkerRegistration";
 import "./globals.css";
 
 const pixelFont = Press_Start_2P({
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={pixelFont.variable}>
       <body>
         <SoundProvider>{children}</SoundProvider>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

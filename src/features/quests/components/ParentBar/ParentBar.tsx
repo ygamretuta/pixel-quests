@@ -1,19 +1,29 @@
 "use client";
 
 import { useTransition } from "react";
+import { ChildSwitcher } from "@/features/parent/components/ChildSwitcher/ChildSwitcher";
 import { toggleRestToday } from "@/features/quests/actions";
 import { PixelButton, PixelLinkButton } from "@/shared/ui/PixelButton/PixelButton";
 import "./ParentBar.css";
 
-type ParentBarProps = { restToday: boolean; pendingRewards: number };
+type ParentBarProps = {
+  restToday: boolean;
+  pendingRewards: number;
+  waitingClaims: number;
+  kids: { id: number; name: string }[];
+  currentChildId: number;
+};
 
 /** Parent-mode shortcuts shown under the top bar. */
-export function ParentBar({ restToday, pendingRewards }: ParentBarProps) {
+export function ParentBar({ restToday, pendingRewards, waitingClaims, kids, currentChildId }: ParentBarProps) {
   const [, startTransition] = useTransition();
 
   return (
     <div className="parent-bar">
-      <p className="parent-bar__banner">Parent mode</p>
+      <p className="parent-bar__banner">
+        Parent mode{waitingClaims > 0 ? ` · ${waitingClaims} waiting for you` : ""}
+      </p>
+      <ChildSwitcher kids={kids} currentId={currentChildId} />
       <div className="parent-bar__links">
         <PixelButton
           className="parent-bar__link"

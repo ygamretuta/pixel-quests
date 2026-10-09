@@ -130,3 +130,8 @@
     grid-column: auto;
   }
 }
+
+.quest-manager__add {
+  display: flex;
+  gap: var(--space-1);
+}

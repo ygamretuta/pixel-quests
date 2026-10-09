@@ -9,7 +9,8 @@ React 19 with the React Compiler, Neon Postgres, and private Vercel Blob for pro
 | Command | What it does |
 | --- | --- |
 | `pnpm dev` | Dev server on :3000 |
-| `pnpm check` | ESLint + BEM check + TypeScript (run before pushing) |
+| `pnpm check` | ESLint + BEM check + TypeScript + tests. `pnpm build` runs it first, so a failing check stops a deploy |
+| `pnpm test` | Vitest (time/PHT, bedtime, schedules, streaks and shields, levels and badges) |
 | `pnpm lint` / `pnpm lint:css` | ESLint (includes architecture rules) / BEM CSS check |
 | `node --env-file=.env.local scripts/migrate.mjs` | Create or update tables (safe to re-run) |
 | `node scripts/make-icons.mjs` | Regenerate the app icons from the slime sprite |
@@ -22,7 +23,10 @@ src/
   features/             One folder per product area
     parent/             Parent mode: PIN dialog, session cookie, "parents only" page
     bedtime/            Bedtime lock: sleepy screen after a set hour, settings, gate for kid pages
-    notifications/      Web Push to the parent's phone (service worker in public/sw.js)
+    notifications/      Web Push to parent phones and a child's tablet (service worker in public/sw.js)
+    monsters/           Monster art and the list of monster kinds
+    trophies/           Levels (XP), badges, and the monster collection ("Monster-dex")
+    backup/             Weekly JSON backup of every table, plus a download button
     wardrobe/           Merchant shop, armor, capes, wands, pets, the dress-up character
     rewards/            Real-life treats she can ask for, and the parent's reward manager
     quests/             Quest board, monsters, streaks, quest manager, evidence photos
@@ -43,7 +47,7 @@ src/
 ### Dependency order
 
 ```
-shared  <-  parent  <-  bedtime, notifications  <-  wardrobe, rewards  <-  quests  <-  summary
+shared  <-  parent  <-  bedtime, notifications, monsters, trophies, backup  <-  wardrobe, rewards  <-  quests  <-  summary
 ```
 
 A feature may import from anything to its left, never to its right, and nothing imports from
@@ -77,6 +81,24 @@ Import the file you need by its `@/...` path.
   `useCallback` or `memo`.
 - Pages read cookies or the clock inside `<Suspense>` (Cache Components); `await connection()`
   marks code that must run at request time.
+
+## Kids
+
+Everything is per child (quests, coins, outfit, rewards, rest days, bedtime). A device plays as the child
+in the `pq_child` cookie; a parent picks it in parent mode (`selectChild`). Server code takes an explicit
+`childId` (from `getChildId()` in pages and actions, or looped over in cron routes).
+
+## Schedulers
+
+- Vercel cron (once a day each, free tier): `/api/cron/cleanup` (old photos, plus a Sunday backup) and
+  `/api/cron/weekly-summary` (Sunday evening push).
+- `/api/cron/tick` sends quest reminders to the child's tablet. Vercel's free cron cannot run that often, so
+  `.github/workflows/tick.yml` calls it every 30 minutes (needs the `CRON_SECRET` repository secret).
+
+## Database migrations
+
+`node --env-file=.env.local scripts/migrate.mjs` is additive and safe while the previous release is live.
+Run it with `--contract` only after the new release is deployed; that step drops the old single-child constraints.
 
 ## Bedtime and notifications
 

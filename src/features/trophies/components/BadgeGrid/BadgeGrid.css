@@ -1,0 +1,54 @@
+.badge-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.badge-grid__title {
+  margin: 0;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+.badge-grid__list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badge-grid__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  text-align: center;
+}
+
+.badge-grid__item--locked {
+  opacity: 0.7;
+}
+
+.badge-grid__medal {
+  width: 40px;
+}
+
+.badge-grid__name {
+  font-size: 8px;
+  line-height: 16px;
+}
+
+.badge-grid__hint {
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dim);
+}
+
+@media (min-width: 640px) {
+  .badge-grid__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

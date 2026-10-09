@@ -1,0 +1,41 @@
+.goal-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.goal-bar__icon {
+  flex: none;
+  width: 32px;
+}
+
+.goal-bar__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-half);
+  min-width: 0;
+}
+
+.goal-bar__label,
+.goal-bar__count {
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dim);
+}
+
+.goal-bar__count {
+  text-align: right;
+}
+
+.goal-bar__track {
+  height: 16px;
+  padding: var(--space-half);
+  background: var(--ink-dark);
+}
+
+.goal-bar__fill {
+  display: block;
+  height: 100%;
+  background: var(--accent-weekly);
+}

@@ -1,5 +1,5 @@
-import { spritesByKey } from "@/features/quests/data/monsters";
-import { slime } from "@/features/quests/data/sprites";
+import { spritesByKey } from "@/features/monsters/data/monsters";
+import { slime } from "@/features/monsters/data/sprites";
 import type { Sprite } from "@/shared/ui/PixelSprite/PixelSprite";
 import { WEEKDAY_LETTERS, formatDay } from "@/features/summary/lib/dates";
 import type { WeekSummary } from "@/features/summary/types";
@@ -25,8 +25,10 @@ const CELL_COLOR = {
   done: COLORS.done,
   miss: COLORS.miss,
   rest: COLORS.rest,
+  shield: "#4fc3f7",
   today: COLORS.none,
   na: COLORS.none,
+  off: COLORS.bg,
   future: COLORS.none,
 } as const;
 
@@ -156,7 +158,8 @@ export async function renderSummaryImage(summary: WeekSummary): Promise<Blob> {
       const x = PAD + 20 + index * (cellWidth + 8);
       ctx.fillStyle = CELL_COLOR[cell];
       ctx.fillRect(x, y + 76, cellWidth, 56);
-      ctx.fillStyle = cell === "miss" ? COLORS.ink : cell === "done" || cell === "rest" ? COLORS.bg : COLORS.dim;
+      ctx.fillStyle =
+        cell === "miss" ? COLORS.ink : cell === "done" || cell === "rest" || cell === "shield" ? COLORS.bg : COLORS.dim;
       font(20);
       ctx.fillText(WEEKDAY_LETTERS[index], x + cellWidth / 2 - 10, y + 92);
     });

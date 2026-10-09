@@ -28,7 +28,7 @@ export function QuestHud({ coins, equipped, isParent, onUnlock }: QuestHudProps)
 
   return (
     <header className="quest-hud">
-      <Link href="/shop" className="quest-hud__hero" aria-label="Visit the merchant">
+      <Link href="/trophies" className="quest-hud__hero" aria-label="See your trophies">
         <PixelSprite sprite={characterLayers(equipped)} label="Your hero" />
       </Link>
       {pet && (

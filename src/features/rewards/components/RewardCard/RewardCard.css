@@ -10,6 +10,10 @@
   grid-template-columns: 40px 1fr;
 }
 
+.reward-card--with-icon.reward-card--speaks {
+  grid-template-columns: 40px 1fr auto;
+}
+
 .reward-card--done {
   opacity: 0.8;
 }

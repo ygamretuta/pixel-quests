@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { PackDialog } from "@/features/quests/components/PackDialog/PackDialog";
 import { QuestForm } from "@/features/quests/components/QuestForm/QuestForm";
-import { spritesByKey } from "@/features/quests/data/monsters";
-import { slime } from "@/features/quests/data/sprites";
+import { spritesByKey } from "@/features/monsters/data/monsters";
+import { slime } from "@/features/monsters/data/sprites";
 import { archiveQuest, moveQuest, restoreQuest } from "@/features/quests/manage-actions";
 import type { ManagedQuest } from "@/features/quests/types";
 import { cx } from "@/shared/lib/css/cx";
+import { describeDays, EVERY_DAY } from "@/shared/lib/time/schedule";
 import { panelClass } from "@/shared/ui/Panel/panelClass";
 import { PixelButton, PixelLinkButton } from "@/shared/ui/PixelButton/PixelButton";
 import { PixelSprite } from "@/shared/ui/PixelSprite/PixelSprite";
@@ -21,6 +23,8 @@ const BLANK: ManagedQuest = {
   reward: 5,
   sprite: "slime",
   active: true,
+  days: EVERY_DAY,
+  remindAt: null,
 };
 
 function QuestSummary({ quest }: { quest: ManagedQuest }) {
@@ -32,7 +36,9 @@ function QuestSummary({ quest }: { quest: ManagedQuest }) {
       <div className="quest-manager__info">
         <span className="quest-manager__name">{quest.title}</span>
         <span className="quest-manager__meta">
-          {quest.cadence} · {quest.maxHp} HP · {quest.reward} coins
+          {quest.cadence}
+          {quest.cadence === "daily" ? ` (${describeDays(quest.days)})` : ""} · {quest.maxHp} HP · {quest.reward} coins
+          {quest.remindAt ? ` · remind ${quest.remindAt}` : ""}
         </span>
       </div>
     </>
@@ -41,6 +47,7 @@ function QuestSummary({ quest }: { quest: ManagedQuest }) {
 
 export function QuestManager({ quests }: { quests: ManagedQuest[] }) {
   const [editing, setEditing] = useState<ManagedQuest | null>(null);
+  const [packing, setPacking] = useState(false);
   const [pending, startTransition] = useTransition();
   const active = quests.filter((quest) => quest.active);
   const removed = quests.filter((quest) => !quest.active);
@@ -56,7 +63,12 @@ export function QuestManager({ quests }: { quests: ManagedQuest[] }) {
         <PixelLinkButton href="/" variant="secondary">
           Back
         </PixelLinkButton>
-        <PixelButton onClick={() => setEditing(BLANK)}>+ Add quest</PixelButton>
+        <div className="quest-manager__add">
+          <PixelButton variant="secondary" onClick={() => setPacking(true)}>
+            Packs
+          </PixelButton>
+          <PixelButton onClick={() => setEditing(BLANK)}>+ Add quest</PixelButton>
+        </div>
       </header>
 
       <h1 className="quest-manager__title">Manage quests</h1>
@@ -127,6 +139,7 @@ export function QuestManager({ quests }: { quests: ManagedQuest[] }) {
         </section>
       )}
 
+      {packing && <PackDialog onClose={() => setPacking(false)} />}
       {editing && <QuestForm key={editing.id || "new"} quest={editing} onClose={() => setEditing(null)} />}
     </main>
   );

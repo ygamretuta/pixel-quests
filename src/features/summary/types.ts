@@ -1,4 +1,4 @@
-export type Cell = "done" | "miss" | "na" | "future" | "today" | "rest";
+export type Cell = "done" | "miss" | "na" | "future" | "today" | "rest" | "off" | "shield";
 
 export type WeekSummary = {
   monday: string;

@@ -29,7 +29,8 @@ function showModalOnMount(dialog: HTMLDialogElement | null) {
 function textValues(formData: FormData): FormValues {
   const values: FormValues = {};
   for (const [key, value] of formData) {
-    if (typeof value === "string") values[key] = value;
+    // Checkbox groups send the same name several times; keep them all, comma separated.
+    if (typeof value === "string") values[key] = key in values ? `${values[key]},${value}` : value;
   }
   return values;
 }

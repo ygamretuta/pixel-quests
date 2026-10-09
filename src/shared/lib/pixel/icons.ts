@@ -50,3 +50,18 @@ export const moon: Sprite = {
   ],
   palette: { o: "#b8860b", y: "#ffd34d", H: "#fff3b0" },
 };
+
+export const speaker: Sprite = {
+  rows: ["...o....", "..oo..o.", "ooooo..o", "ooooo.o.", "ooooo.o.", "ooooo..o", "..oo..o.", "...o...."],
+  palette: { o: "#ffffff" },
+};
+
+export const medal: Sprite = {
+  rows: ["..rr..rr..", "..rr..rr..", "...rrrr...", "..oyyyyo..", ".oyyHyyyo.", ".oyyyyyyo.", ".oyyyyyyo.", "..oyyyyo..", "...oooo..."],
+  palette: { r: "#ff4d6d", o: "#b8860b", y: "#ffd34d", H: "#fff3b0" },
+};
+
+export const shield: Sprite = {
+  rows: ["oooooooo", "obbbbbbo", "obbHbbbo", "obbbbbbo", "obbbbbbo", ".obbbbo.", "..obbo..", "...oo..."],
+  palette: { o: "#1b1b3a", b: "#4fc3f7", H: "#d5f3ff" },
+};

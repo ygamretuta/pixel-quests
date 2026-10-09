@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import { PinDialog } from "@/features/parent/components/PinDialog/PinDialog";
 import { buyItem, takeOff, wearItem } from "@/features/wardrobe/actions";
 import { ShopItem } from "@/features/wardrobe/components/ShopItem/ShopItem";
@@ -11,11 +11,18 @@ import { CoinBalance } from "@/shared/ui/CoinBalance/CoinBalance";
 import { PixelLinkButton } from "@/shared/ui/PixelButton/PixelButton";
 import "./Shop.css";
 
-type ShopProps = { coins: number; owned: string[]; equipped: Equipped; isParent: boolean };
+type ShopProps = {
+  coins: number;
+  owned: string[];
+  equipped: Equipped;
+  isParent: boolean;
+  /** Extra things the merchant sells that other features own (e.g. streak shields). */
+  boosts?: ReactNode;
+};
 
 const GREETING = "Welcome, hero! Spend your coins on shiny armor!";
 
-export function Shop({ coins, owned, equipped, isParent }: ShopProps) {
+export function Shop({ coins, owned, equipped, isParent, boosts }: ShopProps) {
   const { play } = useSound();
   const [pending, startTransition] = useTransition();
   const [said, setSaid] = useState(GREETING);
@@ -73,6 +80,8 @@ export function Shop({ coins, owned, equipped, isParent }: ShopProps) {
       </header>
 
       <ShopScene equipped={equipped} said={said} />
+
+      {boosts}
 
       {SLOTS.map((slot) => (
         <section key={slot} className="shop__group">

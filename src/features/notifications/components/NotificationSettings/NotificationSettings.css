@@ -30,3 +30,30 @@
   grid-auto-flow: column;
   gap: var(--space-2);
 }
+
+.notification-settings__role {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.notification-settings__legend {
+  padding: 0 0 var(--space-1);
+  font-size: 8px;
+  line-height: 16px;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.notification-settings__choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--control-height);
+  font-size: 8px;
+  line-height: 16px;
+  cursor: pointer;
+}

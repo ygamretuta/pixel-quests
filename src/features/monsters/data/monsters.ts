@@ -1,6 +1,6 @@
 import { mirror } from "@/shared/lib/pixel/mirror";
 import type { Sprite } from "@/shared/ui/PixelSprite/PixelSprite";
-import { gremlin, slime } from "@/features/quests/data/sprites";
+import { gremlin, slime } from "@/features/monsters/data/sprites";
 
 const base = { k: "#1b1b3a", w: "#ffffff" };
 

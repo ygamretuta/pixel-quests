@@ -4,19 +4,33 @@ import nextTs from "eslint-config-next/typescript";
 
 /**
  * Architecture rules (see README "Project structure"):
- *   shared  <-  parent  <-  bedtime, notifications  <-  wardrobe, rewards  <-  quests  <-  summary
+ *   shared  <-  parent  <-  bedtime, notifications, monsters, trophies, backup  <-  wardrobe, rewards  <-  quests  <-  summary
  * A feature may import from features to its left, never to its right, and never from app/.
  * UI components must not import server modules (types are fine).
  */
-const FEATURES = ["parent", "bedtime", "notifications", "wardrobe", "rewards", "quests", "summary"];
+const FEATURES = [
+  "parent",
+  "bedtime",
+  "notifications",
+  "monsters",
+  "trophies",
+  "backup",
+  "wardrobe",
+  "rewards",
+  "quests",
+  "summary",
+];
 const ALLOWED = {
   parent: [],
   bedtime: ["parent"],
   notifications: ["parent"],
-  wardrobe: ["parent", "bedtime"],
-  rewards: ["parent", "bedtime", "notifications"],
-  quests: ["parent", "bedtime", "wardrobe", "rewards"],
-  summary: ["parent", "bedtime", "notifications", "wardrobe", "rewards", "quests"],
+  monsters: [],
+  trophies: ["parent", "monsters"],
+  backup: ["parent"],
+  wardrobe: ["parent", "bedtime", "trophies"],
+  rewards: ["parent", "bedtime", "notifications", "trophies"],
+  quests: ["parent", "bedtime", "notifications", "monsters", "trophies", "wardrobe", "rewards"],
+  summary: ["parent", "bedtime", "notifications", "monsters", "trophies", "wardrobe", "rewards", "quests"],
 };
 
 const message = (text) => ({ message: text, allowTypeImports: false });
