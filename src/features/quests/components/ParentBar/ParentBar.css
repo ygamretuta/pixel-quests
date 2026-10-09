@@ -1,0 +1,38 @@
+.parent-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.parent-bar__banner {
+  align-self: flex-start;
+  margin: 0;
+  padding: var(--space-half) var(--space-1);
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dark);
+  background: var(--accent-weekly);
+}
+
+.parent-bar__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.parent-bar__link {
+  flex: 1 1 auto;
+  padding: 0 var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .parent-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .parent-bar__link {
+    flex: 0 0 auto;
+  }
+}

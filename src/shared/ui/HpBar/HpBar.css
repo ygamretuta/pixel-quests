@@ -1,0 +1,16 @@
+.hp-bar {
+  display: flex;
+  gap: var(--space-half);
+  padding: var(--space-half);
+  background: var(--ink-dark);
+}
+
+.hp-bar__segment {
+  flex: 1;
+  height: 16px;
+  background: var(--hp-empty);
+}
+
+.hp-bar__segment--full {
+  background: var(--hp-full);
+}

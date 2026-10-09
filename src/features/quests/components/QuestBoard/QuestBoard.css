@@ -1,0 +1,43 @@
+.quest-board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-2);
+}
+
+.quest-board__rest {
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dark);
+  background: var(--accent-daily);
+}
+
+.quest-board__title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.quest-board__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .quest-board {
+    padding: var(--space-4);
+  }
+
+  .quest-board__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .quest-board__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

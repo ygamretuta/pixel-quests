@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Press_Start_2P } from "next/font/google";
-import { SoundProvider } from "@/shared/audio/SoundProvider";
+import { SoundProvider } from "@/shared/audio/SoundProvider/SoundProvider";
 import "./globals.css";
 
 const pixelFont = Press_Start_2P({

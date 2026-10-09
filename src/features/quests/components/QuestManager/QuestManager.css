@@ -1,0 +1,132 @@
+.quest-manager {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-2);
+}
+
+.quest-manager__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.quest-manager__title {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.quest-manager__subtitle {
+  margin: 0;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+.quest-manager__empty {
+  margin: 0;
+  font-size: 12px;
+  line-height: 24px;
+  color: var(--ink-dim);
+}
+
+.quest-manager__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quest-manager__item {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.quest-manager__item--removed {
+  opacity: 0.7;
+}
+
+.quest-manager__thumb {
+  width: 56px;
+  align-self: center;
+}
+
+.quest-manager__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-half);
+  min-width: 0;
+}
+
+.quest-manager__name {
+  font-size: 12px;
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+
+.quest-manager__meta {
+  font-size: 8px;
+  line-height: 16px;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.quest-manager__buttons {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: var(--space-1);
+}
+
+.quest-manager__button {
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--space-1);
+}
+
+.quest-manager__move {
+  flex: 0 0 var(--control-height);
+  padding: 0;
+}
+
+.quest-manager__arrow {
+  display: block;
+  width: 0;
+  height: 0;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+}
+
+.quest-manager__arrow--up {
+  border-bottom: 8px solid currentColor;
+}
+
+.quest-manager__arrow--down {
+  border-top: 8px solid currentColor;
+}
+
+.quest-manager__removed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .quest-manager {
+    max-width: 720px;
+    padding: var(--space-4);
+  }
+
+  .quest-manager__item {
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+  }
+
+  .quest-manager__buttons {
+    grid-column: auto;
+  }
+}

@@ -1,0 +1,50 @@
+.quest-hud {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.quest-hud__hero {
+  display: block;
+  width: 40px;
+}
+
+.quest-hud__pet {
+  width: 24px;
+}
+
+.quest-hud__coins {
+  flex: 1;
+}
+
+.quest-hud__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--control-height);
+  min-height: var(--control-height);
+  padding: 0;
+  font: inherit;
+  font-size: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--panel);
+  border: 0;
+  box-shadow: inset 0 0 0 4px var(--panel-edge);
+  cursor: pointer;
+}
+
+.quest-hud__button--shop {
+  padding: 0 var(--space-1);
+  color: var(--ink-dark);
+  background: var(--accent-weekly);
+  box-shadow: none;
+}
+
+.quest-hud__gift {
+  width: 24px;
+}
+
+.quest-hud__padlock {
+  width: 16px;
+}

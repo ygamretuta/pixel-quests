@@ -1,0 +1,40 @@
+.week-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.week-row__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.week-row__thumb {
+  flex: none;
+  width: 24px;
+}
+
+.week-row__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 8px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+
+.week-row__count {
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--coin);
+}
+
+.week-row__cells {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-half);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

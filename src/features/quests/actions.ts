@@ -2,10 +2,10 @@
 
 import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
-import { lock, requireParent, unlock, type UnlockResult } from "@/server/auth";
-import { sql } from "@/server/db";
-import { awardStreakBonus } from "@/server/streak";
-import { periodKey } from "@/shared/time/pht";
+import { requireParent } from "@/features/parent/server/auth";
+import { sql } from "@/shared/server/db";
+import { awardStreakBonus } from "@/features/quests/server/streak";
+import { periodKey } from "@/shared/lib/time/pht";
 
 const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -13,17 +13,6 @@ const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 export type LogResult =
   | { ok: true; defeated: boolean; bonus: { streak: number; bonus: number } | null }
   | { ok: false; error: "already-defeated" | "bad-file" | "failed" };
-
-export async function unlockParent(pin: string): Promise<UnlockResult> {
-  const result = await unlock(pin);
-  if (result.ok) revalidatePath("/");
-  return result;
-}
-
-export async function lockParent() {
-  await lock();
-  revalidatePath("/");
-}
 
 export async function logProgress(formData: FormData): Promise<LogResult> {
   await requireParent();

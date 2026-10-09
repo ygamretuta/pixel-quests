@@ -1,6 +1,6 @@
 import { get } from "@vercel/blob";
-import { isParent } from "@/server/auth";
-import { sql } from "@/server/db";
+import { isParent } from "@/features/parent/server/auth";
+import { sql } from "@/shared/server/db";
 
 export async function GET(_request: Request, ctx: RouteContext<"/api/evidence/[id]">) {
   if (!(await isParent())) return new Response("Forbidden", { status: 403 });

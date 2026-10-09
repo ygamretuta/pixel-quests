@@ -1,0 +1,56 @@
+.shop-scene {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  padding-top: var(--space-6);
+}
+
+.shop-scene__hero {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-1);
+  justify-self: center;
+}
+
+.shop-scene__hero-body {
+  width: 96px;
+  animation: shop-scene-idle 1s steps(2, jump-none) infinite;
+}
+
+.shop-scene__pet {
+  width: 40px;
+  animation: shop-scene-idle 0.8s steps(2, jump-none) infinite;
+}
+
+.shop-scene__merchant {
+  width: 112px;
+  justify-self: center;
+}
+
+.shop-scene__bubble {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+  left: var(--space-1);
+  margin: 0;
+  padding: var(--space-1);
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dark);
+  background: var(--ink);
+}
+
+@keyframes shop-scene-idle {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-scene__hero-body,
+  .shop-scene__pet {
+    animation: none;
+  }
+}

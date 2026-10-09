@@ -2,9 +2,9 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import { requireParent } from "@/server/auth";
-import { sql } from "@/server/db";
-import { REWARD_ICONS } from "./icons";
+import { requireParent } from "@/features/parent/server/auth";
+import { sql } from "@/shared/server/db";
+import { REWARD_ICONS } from "@/features/rewards/data/icons";
 
 export type RequestResult = { ok: true } | { ok: false; error: "poor" | "waiting" | "gone" };
 export type SaveResult = { ok: true } | { ok: false; error: string };

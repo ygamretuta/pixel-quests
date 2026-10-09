@@ -1,0 +1,15 @@
+.toast {
+  position: fixed;
+  right: var(--space-2);
+  bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+  left: var(--space-2);
+  z-index: 5;
+  margin: 0;
+  padding: var(--space-2);
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+  color: var(--ink-dark);
+  background: var(--accent-weekly);
+  box-shadow: 0 8px 0 0 var(--shadow);
+}

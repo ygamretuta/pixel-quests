@@ -1,0 +1,31 @@
+.boss-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.boss-row__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.boss-row__thumb {
+  flex: none;
+  width: 24px;
+}
+
+.boss-row__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 8px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+
+.boss-row__status {
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--coin);
+}

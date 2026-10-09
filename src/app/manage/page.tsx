@@ -1,28 +1,20 @@
-import Link from "next/link";
 import { Suspense } from "react";
-import { QuestManager } from "@/features/quests/manage/QuestManager";
-import { isParent } from "@/server/auth";
-import { getManagedQuests } from "@/server/board";
+import { ParentOnly } from "@/features/parent/components/ParentOnly/ParentOnly";
+import { isParent } from "@/features/parent/server/auth";
+import { QuestManager } from "@/features/quests/components/QuestManager/QuestManager";
+import { getManagedQuests } from "@/features/quests/server/board";
+import { Loading } from "@/shared/ui/Loading/Loading";
 
 export const metadata = { title: "Manage quests · Pixel Quests" };
 
 async function ManageLoader() {
-  if (!(await isParent())) {
-    return (
-      <main className="manage-locked">
-        <p className="loading">Parents only. Unlock parent mode with the padlock first.</p>
-        <Link href="/" className="pixel-button">
-          Back to quests
-        </Link>
-      </main>
-    );
-  }
+  if (!(await isParent())) return <ParentOnly />;
   return <QuestManager quests={await getManagedQuests()} />;
 }
 
 export default function ManagePage() {
   return (
-    <Suspense fallback={<p className="loading">Loading...</p>}>
+    <Suspense fallback={<Loading>Loading...</Loading>}>
       <ManageLoader />
     </Suspense>
   );

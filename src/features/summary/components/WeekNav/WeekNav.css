@@ -1,0 +1,37 @@
+.week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.week-nav__arrows {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.week-nav__arrow-button {
+  min-width: var(--control-height);
+  padding: 0;
+}
+
+.week-nav__arrow-button--off {
+  opacity: 0.4;
+  box-shadow: none;
+}
+
+.week-nav__arrow {
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+}
+
+.week-nav__arrow--left {
+  border-right: 8px solid currentColor;
+}
+
+.week-nav__arrow--right {
+  border-left: 8px solid currentColor;
+}

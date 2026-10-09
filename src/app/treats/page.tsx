@@ -1,6 +1,7 @@
 import { Suspense } from "react";
-import { Treats } from "@/features/rewards/Treats";
-import { getTreats } from "@/server/rewards";
+import { Treats } from "@/features/rewards/components/Treats/Treats";
+import { getTreats } from "@/features/rewards/server/rewards";
+import { Loading } from "@/shared/ui/Loading/Loading";
 
 export const metadata = { title: "Treats · Pixel Quests" };
 
@@ -10,7 +11,7 @@ async function TreatsLoader() {
 
 export default function TreatsPage() {
   return (
-    <Suspense fallback={<p className="loading">Opening the treat box...</p>}>
+    <Suspense fallback={<Loading>Opening the treat box...</Loading>}>
       <TreatsLoader />
     </Suspense>
   );

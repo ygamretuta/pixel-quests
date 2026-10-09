@@ -1,0 +1,21 @@
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dim);
+}
+
+.streak-badge--lit {
+  color: var(--accent-weekly);
+}
+
+.streak-badge__flame {
+  width: 16px;
+  opacity: 0.4;
+}
+
+.streak-badge--lit .streak-badge__flame {
+  opacity: 1;
+}

@@ -1,5 +1,5 @@
-import type { Equipped } from "@/features/wardrobe/items";
-import type { Streak } from "./streak";
+import type { Equipped } from "@/features/wardrobe/data/items";
+import type { Streak } from "@/features/quests/data/streak";
 
 export type QuestRow = {
   id: string;
@@ -23,3 +23,16 @@ export type Board = {
   quests: QuestRow[];
   evidence: EvidenceRow[];
 };
+
+export type ManagedQuest = {
+  id: string;
+  title: string;
+  monsterName: string;
+  cadence: "daily" | "weekly";
+  maxHp: number;
+  reward: number;
+  sprite: string;
+  active: boolean;
+};
+
+export type StreakBonus = { streak: number; bonus: number };

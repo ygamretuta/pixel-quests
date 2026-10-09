@@ -1,9 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { checkPin, isParent } from "@/server/auth";
-import { sql } from "@/server/db";
-import { ITEMS_BY_ID, SLOTS, type Slot } from "./items";
+import { checkPin, isParent } from "@/features/parent/server/auth";
+import { sql } from "@/shared/server/db";
+import { ITEMS_BY_ID, SLOTS, type Slot } from "@/features/wardrobe/data/items";
 
 export type BuyResult =
   | { ok: true }

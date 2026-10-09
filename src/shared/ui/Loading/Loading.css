@@ -1,0 +1,7 @@
+.loading {
+  margin: 0;
+  padding: var(--space-4) var(--space-2);
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+}

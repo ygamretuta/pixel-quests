@@ -1,5 +1,5 @@
 import { del } from "@vercel/blob";
-import { sql } from "@/server/db";
+import { sql } from "@/shared/server/db";
 
 // Keeps storage inside the free tier: drops evidence photos past the retention window.
 const RETENTION_DAYS = 60;

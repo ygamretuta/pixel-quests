@@ -1,0 +1,12 @@
+.log-dialog__file {
+  font: inherit;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.log-dialog__preview {
+  width: 100%;
+  max-height: 240px;
+  object-fit: contain;
+  background: var(--stage);
+}

@@ -1,0 +1,14 @@
+.parent-only {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-2);
+}
+
+.parent-only__message {
+  margin: 0;
+  font-size: 12px;
+  line-height: 24px;
+  text-align: center;
+}

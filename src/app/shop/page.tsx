@@ -1,7 +1,8 @@
 import { Suspense } from "react";
-import { Shop } from "@/features/wardrobe/Shop";
-import { isParent } from "@/server/auth";
-import { getWardrobe } from "@/server/wardrobe";
+import { isParent } from "@/features/parent/server/auth";
+import { Shop } from "@/features/wardrobe/components/Shop/Shop";
+import { getWardrobe } from "@/features/wardrobe/server/wardrobe";
+import { Loading } from "@/shared/ui/Loading/Loading";
 
 export const metadata = { title: "Merchant · Pixel Quests" };
 
@@ -12,7 +13,7 @@ async function ShopLoader() {
 
 export default function ShopPage() {
   return (
-    <Suspense fallback={<p className="loading">Opening the shop...</p>}>
+    <Suspense fallback={<Loading>Opening the shop...</Loading>}>
       <ShopLoader />
     </Suspense>
   );

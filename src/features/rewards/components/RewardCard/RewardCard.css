@@ -1,0 +1,43 @@
+.reward-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.reward-card--with-icon {
+  grid-template-columns: 40px 1fr;
+}
+
+.reward-card--done {
+  opacity: 0.8;
+}
+
+.reward-card__icon {
+  width: 40px;
+}
+
+.reward-card__name {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-half);
+  min-width: 0;
+  font-size: 12px;
+  line-height: 24px;
+  overflow-wrap: anywhere;
+}
+
+.reward-card__detail {
+  font-size: 8px;
+  line-height: 16px;
+  color: var(--ink-dim);
+}
+
+.reward-card__actions {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: var(--space-2);
+}

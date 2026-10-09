@@ -1,7 +1,8 @@
 import { Suspense } from "react";
-import { QuestBoard } from "@/features/quests/QuestBoard";
-import { isParent } from "@/server/auth";
-import { getBoard } from "@/server/board";
+import { isParent } from "@/features/parent/server/auth";
+import { QuestBoard } from "@/features/quests/components/QuestBoard/QuestBoard";
+import { getBoard } from "@/features/quests/server/board";
+import { Loading } from "@/shared/ui/Loading/Loading";
 
 async function BoardLoader() {
   // Reading the cookie first makes the rest of this render request-time.
@@ -12,7 +13,7 @@ async function BoardLoader() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<p className="loading">Loading quests...</p>}>
+    <Suspense fallback={<Loading>Loading quests...</Loading>}>
       <BoardLoader />
     </Suspense>
   );

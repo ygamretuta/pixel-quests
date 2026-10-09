@@ -1,0 +1,22 @@
+.shop-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.shop-item__preview {
+  width: 64px;
+}
+
+.shop-item__name {
+  font-size: 8px;
+  line-height: 16px;
+  text-align: center;
+}
+
+.shop-item__button {
+  width: 100%;
+  padding: 0 var(--space-1);
+}

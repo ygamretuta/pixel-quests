@@ -1,0 +1,24 @@
+.choice-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-1);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-group__legend {
+  grid-column: 1 / -1;
+  padding: 0;
+  font-size: 8px;
+  line-height: 16px;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+@media (min-width: 640px) {
+  .choice-group--wide {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
