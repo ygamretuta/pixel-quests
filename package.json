@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "lint:css": "node scripts/check-bem.mjs",
-    "check": "pnpm lint && pnpm lint:css && tsc --noEmit && pnpm test",
+    "check": "pnpm lint && pnpm lint:css && next typegen && tsc --noEmit && pnpm test",
     "test": "vitest run"
   },
   "dependencies": {
