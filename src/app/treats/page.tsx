@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { AwakeGate } from "@/features/bedtime/server/AwakeGate";
 import { Treats } from "@/features/rewards/components/Treats/Treats";
 import { getTreats } from "@/features/rewards/server/rewards";
 import { Loading } from "@/shared/ui/Loading/Loading";
@@ -12,7 +13,9 @@ async function TreatsLoader() {
 export default function TreatsPage() {
   return (
     <Suspense fallback={<Loading>Opening the treat box...</Loading>}>
-      <TreatsLoader />
+      <AwakeGate>
+        <TreatsLoader />
+      </AwakeGate>
     </Suspense>
   );
 }

@@ -33,6 +33,8 @@ export function Treats({ coins, rewards, pending, recent }: TreatsProps) {
         setSaid(`You asked for ${reward.title}! Now wait for a grown-up.`);
       } else if (result.error === "poor") {
         setSaid("Not enough coins yet. Keep going!");
+      } else if (result.error === "sleeping") {
+        setSaid("Shh! It's bedtime. Ask again in the morning.");
       } else if (result.error === "waiting") {
         setSaid("You already asked for that one!");
       } else {

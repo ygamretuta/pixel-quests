@@ -31,6 +31,9 @@ export function ParentBar({ restToday, pendingRewards }: ParentBarProps) {
         <PixelLinkButton href="/rewards" className="parent-bar__link">
           Rewards{pendingRewards > 0 ? ` (${pendingRewards})` : ""}
         </PixelLinkButton>
+        <PixelLinkButton href="/settings" className="parent-bar__link">
+          Settings
+        </PixelLinkButton>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { AwakeGate } from "@/features/bedtime/server/AwakeGate";
 import { isParent } from "@/features/parent/server/auth";
 import { QuestBoard } from "@/features/quests/components/QuestBoard/QuestBoard";
 import { getBoard } from "@/features/quests/server/board";
@@ -14,7 +15,9 @@ async function BoardLoader() {
 export default function Home() {
   return (
     <Suspense fallback={<Loading>Loading quests...</Loading>}>
-      <BoardLoader />
+      <AwakeGate>
+        <BoardLoader />
+      </AwakeGate>
     </Suspense>
   );
 }

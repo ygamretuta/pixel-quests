@@ -21,6 +21,8 @@ src/
   app/                  Routing only: thin pages, layout, route handlers, global tokens (globals.css)
   features/             One folder per product area
     parent/             Parent mode: PIN dialog, session cookie, "parents only" page
+    bedtime/            Bedtime lock: sleepy screen after a set hour, settings, gate for kid pages
+    notifications/      Web Push to the parent's phone (service worker in public/sw.js)
     wardrobe/           Merchant shop, armor, capes, wands, pets, the dress-up character
     rewards/            Real-life treats she can ask for, and the parent's reward manager
     quests/             Quest board, monsters, streaks, quest manager, evidence photos
@@ -41,7 +43,7 @@ src/
 ### Dependency order
 
 ```
-shared  <-  parent  <-  wardrobe, rewards  <-  quests  <-  summary
+shared  <-  parent  <-  bedtime, notifications  <-  wardrobe, rewards  <-  quests  <-  summary
 ```
 
 A feature may import from anything to its left, never to its right, and nothing imports from
@@ -76,7 +78,18 @@ Import the file you need by its `@/...` path.
 - Pages read cookies or the clock inside `<Suspense>` (Cache Components); `await connection()`
   marks code that must run at request time.
 
+## Bedtime and notifications
+
+- Bedtime is stored in the `settings` table and read in Philippine time. Kid pages (`/`, `/shop`,
+  `/treats`) are wrapped in `AwakeGate`; a signed-in parent always gets through, and kid-only
+  Server Actions refuse while asleep.
+- Reward requests call `notifyParents` inside `after()`. On iPhone, Web Push only works for the
+  app added to the Home Screen: open Settings there and tap "Turn on".
+- Subscriptions live in `push_subscriptions`; dead ones (404/410) are removed on the next send.
+
 ## Environment
 
 Pulled from Vercel with `vercel env pull`: `DATABASE_URL` (Neon), `BLOB_READ_WRITE_TOKEN`,
-`PARENT_PIN_HASH`, `SESSION_SECRET`, `CRON_SECRET`. The PIN is stored only as a salted scrypt hash.
+`PARENT_PIN_HASH`, `SESSION_SECRET`, `CRON_SECRET`, and the Web Push keys
+`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`.
+The PIN is stored only as a salted scrypt hash.

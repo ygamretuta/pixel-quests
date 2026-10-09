@@ -30,3 +30,23 @@ export const flame: Sprite = {
   rows: mirror(["...r", "..rr", ".rrr", ".rry", "rrry", "rryy", "rryy", "rrry", ".rrr"]),
   palette: { r: "#ff7a59", y: "#ffd34d" },
 };
+
+export const moon: Sprite = {
+  rows: [
+    "..............",
+    "....ooo.......",
+    "..ooyyo.......",
+    ".oyyyo........",
+    ".oyyHo........",
+    ".oyHyo........",
+    "oyHyyyo.......",
+    "oyyyyyyo......",
+    ".oyyyyyyo...o.",
+    ".oyyyyyyyoooo.",
+    ".oyyyyyyyyyo..",
+    "..ooyyyyyyo...",
+    "....oooooo....",
+    "..............",
+  ],
+  palette: { o: "#b8860b", y: "#ffd34d", H: "#fff3b0" },
+};

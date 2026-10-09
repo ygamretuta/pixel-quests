@@ -69,6 +69,16 @@ const statements = [
     created_at timestamptz NOT NULL DEFAULT now(),
     resolved_at timestamptz
   )`,
+  `CREATE TABLE IF NOT EXISTS settings (
+    key text PRIMARY KEY,
+    value jsonb NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS push_subscriptions (
+    endpoint text PRIMARY KEY,
+    p256dh text NOT NULL,
+    auth text NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+  )`,
   `INSERT INTO quests (id, title, monster_name, cadence, max_hp, reward, sprite, position) VALUES
     ('teeth', 'Brush Teeth', 'Gloop', 'daily', 2, 5, 'slime', 1),
     ('reading', 'Read a Story', 'Blip', 'daily', 1, 5, 'slime', 2),

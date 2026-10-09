@@ -5,7 +5,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export type Cadence = "daily" | "weekly";
 
 /** Start of the PHT day (12:00 AM PHT) containing `now`, as a UTC timestamp. */
-function startOfPhtDay(now: number) {
+export function startOfPhtDay(now: number) {
   return Math.floor((now + PHT_OFFSET_MS) / DAY_MS) * DAY_MS - PHT_OFFSET_MS;
 }
 

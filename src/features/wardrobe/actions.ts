@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { isAwake } from "@/features/bedtime/server/bedtime";
 import { checkPin, isParent } from "@/features/parent/server/auth";
 import { sql } from "@/shared/server/db";
 import { ITEMS_BY_ID, SLOTS, type Slot } from "@/features/wardrobe/data/items";
@@ -50,6 +51,7 @@ export async function buyItem(itemId: string, pin?: string): Promise<BuyResult> 
 }
 
 export async function wearItem(itemId: string) {
+  if (!(await isAwake())) return;
   const item = ITEMS_BY_ID[itemId];
   if (!item) return;
   await sql`
@@ -60,6 +62,7 @@ export async function wearItem(itemId: string) {
 }
 
 export async function takeOff(slot: Slot) {
+  if (!(await isAwake())) return;
   if (!SLOTS.includes(slot)) return;
   await sql`DELETE FROM equipped WHERE slot = ${slot}`;
   refresh();

@@ -4,17 +4,19 @@ import nextTs from "eslint-config-next/typescript";
 
 /**
  * Architecture rules (see README "Project structure"):
- *   shared  <-  parent  <-  wardrobe, rewards  <-  quests  <-  summary
+ *   shared  <-  parent  <-  bedtime, notifications  <-  wardrobe, rewards  <-  quests  <-  summary
  * A feature may import from features to its left, never to its right, and never from app/.
  * UI components must not import server modules (types are fine).
  */
-const FEATURES = ["parent", "wardrobe", "rewards", "quests", "summary"];
+const FEATURES = ["parent", "bedtime", "notifications", "wardrobe", "rewards", "quests", "summary"];
 const ALLOWED = {
   parent: [],
-  wardrobe: ["parent"],
-  rewards: ["parent"],
-  quests: ["parent", "wardrobe", "rewards"],
-  summary: ["parent", "wardrobe", "rewards", "quests"],
+  bedtime: ["parent"],
+  notifications: ["parent"],
+  wardrobe: ["parent", "bedtime"],
+  rewards: ["parent", "bedtime", "notifications"],
+  quests: ["parent", "bedtime", "wardrobe", "rewards"],
+  summary: ["parent", "bedtime", "wardrobe", "rewards", "quests"],
 };
 
 const message = (text) => ({ message: text, allowTypeImports: false });

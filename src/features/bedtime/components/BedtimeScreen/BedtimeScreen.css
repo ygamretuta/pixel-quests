@@ -1,0 +1,45 @@
+.bedtime-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 100dvh;
+  padding: var(--space-4) var(--space-2);
+  text-align: center;
+}
+
+.bedtime-screen__moon {
+  width: 128px;
+  animation: bedtime-screen-float 2s steps(2, jump-none) infinite;
+}
+
+.bedtime-screen__title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+  color: var(--accent-weekly);
+}
+
+.bedtime-screen__message {
+  max-width: 320px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+.bedtime-screen__grownup {
+  margin-top: var(--space-4);
+  font-size: 8px;
+}
+
+@keyframes bedtime-screen-float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bedtime-screen__moon {
+    animation: none;
+  }
+}

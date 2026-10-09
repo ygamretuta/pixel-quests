@@ -2,6 +2,7 @@
 
 import { del, put } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { isAwake } from "@/features/bedtime/server/bedtime";
 import { requireParent } from "@/features/parent/server/auth";
 import { sql } from "@/shared/server/db";
 import { awardStreakBonus } from "@/features/quests/server/streak";
@@ -68,6 +69,7 @@ export async function logProgress(formData: FormData): Promise<LogResult> {
 }
 
 export async function renameMonster(questId: string, name: string) {
+  if (!(await isAwake())) return;
   const trimmed = name.trim().slice(0, 12);
   if (!trimmed) return;
   await sql`UPDATE quests SET monster_name = ${trimmed} WHERE id = ${questId}`;

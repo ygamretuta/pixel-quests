@@ -2,11 +2,14 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { isAwake } from "@/features/bedtime/server/bedtime";
+import { notifyParents } from "@/features/notifications/server/push";
 import { requireParent } from "@/features/parent/server/auth";
 import { sql } from "@/shared/server/db";
 import { REWARD_ICONS } from "@/features/rewards/data/icons";
 
-export type RequestResult = { ok: true } | { ok: false; error: "poor" | "waiting" | "gone" };
+export type RequestResult = { ok: true } | { ok: false; error: "poor" | "waiting" | "gone" | "sleeping" };
 export type SaveResult = { ok: true } | { ok: false; error: string };
 
 function refresh() {
@@ -17,7 +20,8 @@ function refresh() {
 
 /** She asks for a real-life reward. The coins are held until a parent answers. */
 export async function requestReward(rewardId: string): Promise<RequestResult> {
-  const [reward] = await sql`SELECT cost FROM rewards WHERE id = ${rewardId} AND active`;
+  if (!(await isAwake())) return { ok: false, error: "sleeping" };
+  const [reward] = await sql`SELECT title, cost FROM rewards WHERE id = ${rewardId} AND active`;
   if (!reward) return { ok: false, error: "gone" };
 
   const [waiting] = await sql`SELECT 1 FROM reward_requests WHERE reward_id = ${rewardId} AND status = 'pending'`;
@@ -37,6 +41,16 @@ export async function requestReward(rewardId: string): Promise<RequestResult> {
     )
     SELECT (SELECT count(*) FROM ins)::int AS made`;
   if (!row.made) return { ok: false, error: "poor" };
+
+  // Tell the parents' phones after the response is sent, so asking never feels slow.
+  after(() =>
+    notifyParents({
+      title: "She asked for a reward",
+      body: `${reward.title} (${reward.cost} coins)`,
+      url: "/rewards",
+      tag: `reward-${rewardId}`,
+    }).catch(() => {}),
+  );
   refresh();
   return { ok: true };
 }
@@ -56,6 +70,7 @@ async function closeAndRefund(requestId: number, status: "cancelled" | "denied")
 }
 
 export async function cancelRequest(requestId: number) {
+  if (!(await isAwake())) return;
   await closeAndRefund(requestId, "cancelled");
 }
 
