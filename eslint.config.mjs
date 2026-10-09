@@ -16,7 +16,7 @@ const ALLOWED = {
   wardrobe: ["parent", "bedtime"],
   rewards: ["parent", "bedtime", "notifications"],
   quests: ["parent", "bedtime", "wardrobe", "rewards"],
-  summary: ["parent", "bedtime", "wardrobe", "rewards", "quests"],
+  summary: ["parent", "bedtime", "notifications", "wardrobe", "rewards", "quests"],
 };
 
 const message = (text) => ({ message: text, allowTypeImports: false });
